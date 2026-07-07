@@ -1,0 +1,17 @@
+{
+  "name": "peacock-leather-store",
+  "version": "1.0.0",
+  "description": "Peacock Genuine Leather — monorepo root",
+  "scripts": {
+    "dev":      "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend":  "npm --prefix backend run dev",
+    "frontend": "cd frontend && npm run dev",
+    "start":    "cd backend && node server.js",
+    "migrate":  "cd backend && node src/migrations/run.js up",
+    "seed":     "cd backend && node src/migrations/run.js seed",
+    "build":    "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

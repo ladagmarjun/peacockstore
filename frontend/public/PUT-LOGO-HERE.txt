@@ -1,0 +1,12 @@
+Save your logo in THIS folder as:  logo.png
+
+Path: frontend/public/logo.png
+
+The site header will use it automatically (served at /logo.png).
+Tips:
+  - PNG with a transparent background looks best.
+  - It's displayed at 52px tall; anything ~500x150px or larger is fine.
+  - Prefer SVG? Save as logo.png anyway, OR tell Claude and it can switch to /logo.svg.
+
+Until logo.png exists, the header falls back to the "Peacock Leather" text.
+You can delete this note once your logo is in place.
