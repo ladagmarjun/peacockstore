@@ -1,41 +1,47 @@
-const express = require('express');
-const router  = express.Router();
-const admin   = require('../controllers/adminController');
+const express   = require('express');
+const router    = express.Router();
+const dashboard = require('../controllers/admin/dashboardController');
+const product   = require('../controllers/admin/productController');
+const category  = require('../controllers/admin/categoryController');
+const store     = require('../controllers/admin/storeController');
+const banner    = require('../controllers/admin/bannerController');
+const order     = require('../controllers/admin/orderController');
+const user      = require('../controllers/admin/userController');
 const { requireAdmin } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
 
 router.use(requireAdmin);
 
-router.get('/dashboard',           admin.dashboard);
+router.get('/dashboard',           dashboard.dashboard);
 
-router.post('/upload',             upload.single('image'), admin.uploadImage);
+router.post('/upload',             upload.single('image'), product.uploadImage);
 
-router.get('/products',            admin.getProducts);
-router.post('/products',           admin.createProduct);
-router.get('/products/:id',        admin.getProduct);
-router.put('/products/:id',        admin.updateProduct);
-router.delete('/products/:id',     admin.deleteProduct);
+router.get('/products',            product.getProducts);
+router.post('/products',           product.createProduct);
+router.get('/products/:id',        product.getProduct);
+router.put('/products/:id',        product.updateProduct);
+router.delete('/products/:id',     product.deleteProduct);
 
-router.get('/categories',          admin.getCategories);
-router.post('/categories',         admin.createCategory);
-router.put('/categories/:id',      admin.updateCategory);
-router.delete('/categories/:id',   admin.deleteCategory);
+router.get('/categories',          category.getCategories);
+router.post('/categories',         category.createCategory);
+router.put('/categories/:id',      category.updateCategory);
+router.delete('/categories/:id',   category.deleteCategory);
 
-router.get('/banners',             admin.getBanners);
-router.post('/banners',            admin.createBanner);
-router.put('/banners/:id',         admin.updateBanner);
-router.delete('/banners/:id',      admin.deleteBanner);
+router.get('/banners',             banner.getBanners);
+router.post('/banners',            banner.createBanner);
+router.put('/banners/:id',         banner.updateBanner);
+router.delete('/banners/:id',      banner.deleteBanner);
 
-router.get('/stores',              admin.getStores);
-router.post('/stores',             admin.createStore);
-router.put('/stores/:id',          admin.updateStore);
-router.delete('/stores/:id',       admin.deleteStore);
+router.get('/stores',              store.getStores);
+router.post('/stores',             store.createStore);
+router.put('/stores/:id',          store.updateStore);
+router.delete('/stores/:id',       store.deleteStore);
 
-router.get('/orders',              admin.getOrders);
-router.get('/orders/:id',          admin.getOrder);
-router.patch('/orders/:id/status', admin.updateOrderStatus);
+router.get('/orders',              order.getOrders);
+router.get('/orders/:id',          order.getOrder);
+router.patch('/orders/:id/status', order.updateOrderStatus);
 
-router.get('/users',               admin.getUsers);
-router.patch('/users/:id',         admin.updateUser);
+router.get('/users',               user.getUsers);
+router.patch('/users/:id',         user.updateUser);
 
 module.exports = router;

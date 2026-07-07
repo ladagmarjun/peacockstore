@@ -1,52 +1,5 @@
-const Product  = require('../models/Product');
-const Category = require('../models/Category');
-const Order    = require('../models/Order');
-const Store    = require('../models/Store');
-const Banner   = require('../models/Banner');
-
-exports.getCategories = async (req, res, next) => {
-  try {
-    const categories = await Category.findAll();
-    res.json(categories);
-  } catch (err) { next(err); }
-};
-
-exports.getStores = async (req, res, next) => {
-  try {
-    const stores = await Store.findAll({ activeOnly: true });
-    res.json(stores);
-  } catch (err) { next(err); }
-};
-
-exports.getBanners = async (req, res, next) => {
-  try {
-    const banners = await Banner.findAll({ activeOnly: true });
-    res.json(banners);
-  } catch (err) { next(err); }
-};
-
-exports.getProducts = async (req, res, next) => {
-  try {
-    const products = await Product.findAll({ categorySlug: req.query.cat, activeOnly: true });
-    res.json(products);
-  } catch (err) { next(err); }
-};
-
-exports.getProduct = async (req, res, next) => {
-  try {
-    const product = await Product.findBySlug(req.params.slug);
-    if (!product) return res.status(404).json({ error: 'Product not found.' });
-    res.json(product);
-  } catch (err) { next(err); }
-};
-
-exports.getProductById = async (req, res, next) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product || !product.is_active) return res.status(404).json({ error: 'Product not found.' });
-    res.json(product);
-  } catch (err) { next(err); }
-};
+const Product = require('../../models/Product');
+const Order   = require('../../models/Order');
 
 exports.placeOrder = async (req, res, next) => {
   try {
