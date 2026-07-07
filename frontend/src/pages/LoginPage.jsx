@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 export default function LoginPage() {
   const { login }  = useAuth();
   const navigate   = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect   = searchParams.get('redirect');
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +21,8 @@ export default function LoginPage() {
     setError('');
     try {
       const user = await login(form.email, form.password);
-      navigate(user.role === 'admin' ? '/admin' : '/');
+      if (redirect) navigate(redirect);
+      else navigate(user.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       setError(err.message);
       setLoading(false);

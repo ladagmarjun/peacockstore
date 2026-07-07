@@ -1,8 +1,18 @@
 const Product = require('../../models/Product');
 const Order   = require('../../models/Order');
+const Setting = require('../../models/Setting');
 
 exports.placeOrder = async (req, res, next) => {
   try {
+    // Online ordering can be switched off site-wide from the admin.
+    if (await Setting.get('cart_enabled') === false) {
+      return res.status(403).json({ error: 'Online ordering is currently unavailable. Please shop via our marketplace or visit a store.' });
+    }
+    // Checkout requires a logged-in account ("cart, then login").
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Please log in to place an order.' });
+    }
+
     const {
       customer_name, customer_email, customer_phone,
       shipping_address, city, province, postal_code,

@@ -5,7 +5,9 @@ import Footer       from '../components/Footer';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import HeroSlider   from '../components/HeroSlider';
+import MarketplaceIcon from '../components/MarketplaceIcon';
 import { api } from '../services/api';
+import { MARKETPLACES } from '../constants';
 
 const STRIP_ITEMS = [
   'Full-Grain Leather','Solid Brass Hardware','Lifetime Craftsmanship',
@@ -21,7 +23,8 @@ export default function HomePage() {
   const [selected,    setSelected]    = useState(null);
   const [loading,     setLoading]     = useState(true);
 
-  const activeCat = searchParams.get('cat') || 'all';
+  const activeCat   = searchParams.get('cat')   || 'all';
+  const activeBrand = searchParams.get('brand') || '';
 
   useEffect(() => {
     api.getCategories().then(setCategories).catch(() => {});
@@ -38,43 +41,58 @@ export default function HomePage() {
   }, [activeCat]);
 
   const setCategory = (slug) => {
-    if (slug === 'all') searchParams.delete('cat');
-    else setSearchParams({ cat: slug });
+    const next = {};
+    if (slug !== 'all') next.cat = slug;
+    if (activeBrand)    next.brand = activeBrand;
+    setSearchParams(next);
   };
+
+  const clearBrand = () => {
+    const next = {};
+    if (activeCat !== 'all') next.cat = activeCat;
+    setSearchParams(next);
+  };
+
+  // Brand filtering is applied client-side over the current category's products.
+  const shown = activeBrand
+    ? products.filter(p => (p.brand || '') === activeBrand)
+    : products;
 
   return (
     <>
       <Navbar />
 
-      {/* Hero — cover slideshow (falls back to the text hero if no banners) */}
+      {/* Hero — admin slideshow if banners exist, otherwise the editorial hero */}
       {banners.length > 0 ? (
         <HeroSlider banners={banners} />
       ) : (
-      <section className="banner">
-        <div className="wrap banner-inner">
-          <div className="banner-text">
-            <div className="badge">Handcrafted in the Philippines</div>
-            <h1>Genuine Leather,<br /><em>Timeless</em> Craft</h1>
-            <p className="banner-sub">
-              Bags, backpacks, slings and belts made from full-grain leather —
-              built to age beautifully and last decades.
+        <section className="lhero">
+          <div className="wrap lhero-inner">
+            <span className="eyebrow">Handpicked Genuine Leather</span>
+            <h1>Everyday leather goods, made to be <em>carried for years</em>.</h1>
+            <p>
+              Peacock crafts bags, backpacks, slings and belts from genuine leather —
+              pieces that age with character and hold up to daily use.
             </p>
-            <div className="banner-cta">
-              <a href="#shop" className="btn">Shop Collection</a>
-              <a href="#stores" className="btn-ghost">Find a Store</a>
+            <div className="lhero-cta">
+              <a className="btn" href="#shop">Shop Now →</a>
+              <a className="btn-line" href="#stores">Visit Our Store</a>
             </div>
           </div>
-          <div className="banner-art">
-            <div className="fan"><div className="glyph">🦚</div></div>
-            <div className="banner-meta">
-              <span>EST. 2018</span>
-              <span>100% GENUINE LEATHER</span>
-              <span>PHILIPPINES</span>
-            </div>
-          </div>
+        </section>
+      )}
+
+      {/* Craft intro */}
+      <section className="lcraft">
+        <div className="wrap">
+          <span className="eyebrow center">Our Craft</span>
+          <h2>Real leather, honest making</h2>
+          <p>
+            We keep it simple: genuine leather, clean stitching, and designs built
+            around how you actually use them every day.
+          </p>
         </div>
       </section>
-      )}
 
       {/* Trust Strip */}
       <div className="strip">
@@ -105,24 +123,31 @@ export default function HomePage() {
           </div>
         </div>
 
+        {activeBrand && (
+          <div className="brand-filter">
+            Brand: <strong>{activeBrand}</strong>
+            <button onClick={clearBrand} aria-label="Clear brand filter">✕</button>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">Loading products…</div>
-        ) : products.length === 0 ? (
+        ) : shown.length === 0 ? (
           <div className="empty">No products found.</div>
         ) : (
           <div className="grid">
-            {products.map(p => (
+            {shown.map(p => (
               <ProductCard key={p.id} product={p} onClick={setSelected} />
             ))}
           </div>
         )}
       </section>
 
-      {/* Stores */}
+      {/* Physical Stores */}
       {stores.length > 0 && (
         <section className="stores wrap" id="stores">
-          <h2>Our Stores</h2>
-          <p className="sub">Visit us in person and feel the quality of every stitch.</p>
+          <h2>Visit Our Store</h2>
+          <p className="sub">Come see us in person and feel the quality of every stitch.</p>
           <div className="store-grid">
             {stores.map(s => (
               <div key={s.id} className="store">
@@ -141,15 +166,21 @@ export default function HomePage() {
 
       {/* Marketplace Band */}
       <section className="market">
-        <div className="wrap market-inner">
-          <div>
-            <h2>Also Available Online</h2>
-            <p>Shop on your favorite marketplace — same prices, same quality guarantee.</p>
+        <div className="wrap">
+          <div className="market-head">
+            <h2>Find us on your favorite shop</h2>
+            <p>Same genuine leather goods — shop wherever you like best.</p>
           </div>
-          <div className="market-links">
-            <a href="#" className="mbtn" style={{ background: '#ee4d2d' }}>🛍️ Shopee</a>
-            <a href="#" className="mbtn" style={{ background: '#111' }}>📱 TikTok</a>
-            <a href="#" className="mbtn" style={{ background: '#0f146d' }}>🛒 Lazada</a>
+          <div className="mk-grid">
+            {MARKETPLACES.map(m => (
+              <a key={m.key} className="mk-card" href={m.url} target="_blank" rel="noreferrer">
+                <span className="mk-logo" style={{ background: m.bg }}><MarketplaceIcon brand={m.key} size={24} /></span>
+                <span className="mk-meta">
+                  <small>{m.label}</small>
+                  <span>{m.handle}</span>
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>

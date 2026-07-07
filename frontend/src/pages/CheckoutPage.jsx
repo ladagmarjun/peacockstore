@@ -1,17 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar  from '../components/Navbar';
 import Footer  from '../components/Footer';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import { api } from '../services/api';
 
 function fmtPrice(n) { return '₱' + Number(n).toLocaleString('en-PH'); }
 
 export default function CheckoutPage() {
   const { cart, total, clearCart, removeItem, updateQty } = useCart();
-  const { user }    = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { cartEnabled, loading: settingsLoading } = useSettings();
   const navigate    = useNavigate();
+
+  // Guard: cart off → home; not signed in → login (then back to checkout).
+  useEffect(() => {
+    if (authLoading || settingsLoading) return;
+    if (!cartEnabled) { navigate('/', { replace: true }); return; }
+    if (!user) { navigate('/login?redirect=/checkout', { replace: true }); }
+  }, [authLoading, settingsLoading, cartEnabled, user, navigate]);
   const [form, setForm] = useState({
     customer_name:    user?.full_name || '',
     customer_email:   user?.email    || '',

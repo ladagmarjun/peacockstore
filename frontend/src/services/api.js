@@ -29,7 +29,9 @@ export const api = {
   logout:   ()       => request('/auth/logout',   { method: 'POST' }),
 
   // Shop
+  getSettings:   ()       => request('/settings'),
   getCategories: ()       => request('/categories'),
+  getBrands:     ()       => request('/brands'),
   getStores:     ()       => request('/stores'),
   getBanners:    ()       => request('/banners'),
   getProducts:   (cat)    => request('/products' + (cat && cat !== 'all' ? `?cat=${cat}` : '')),
@@ -50,6 +52,10 @@ export const api = {
   adminCreateCategory:   (body)     => request('/admin/categories',      { method: 'POST', body }),
   adminUpdateCategory:   (id, body) => request(`/admin/categories/${id}`, { method: 'PUT', body }),
   adminDeleteCategory:   (id)       => request(`/admin/categories/${id}`, { method: 'DELETE' }),
+  adminBrands:           ()        => request('/admin/brands'),
+  adminCreateBrand:      (body)     => request('/admin/brands',      { method: 'POST', body }),
+  adminUpdateBrand:      (id, body) => request(`/admin/brands/${id}`, { method: 'PUT', body }),
+  adminDeleteBrand:      (id)       => request(`/admin/brands/${id}`, { method: 'DELETE' }),
   adminBanners:       ()        => request('/admin/banners'),
   adminCreateBanner:  (body)     => request('/admin/banners',      { method: 'POST', body }),
   adminUpdateBanner:  (id, body) => request(`/admin/banners/${id}`, { method: 'PUT', body }),
@@ -63,4 +69,6 @@ export const api = {
   adminUpdateOrderStatus: (id, status) => request(`/admin/orders/${id}/status`, { method: 'PATCH', body: { status } }),
   adminUsers:      ()         => request('/admin/users'),
   adminUpdateUser: (id, body) => request(`/admin/users/${id}`, { method: 'PATCH', body }),
+  adminSettings:       ()     => request('/admin/settings'),
+  adminUpdateSettings: (body) => request('/admin/settings', { method: 'PUT', body }),
 };

@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useSettings } from '../context/SettingsContext';
+import MarketplaceIcon from './MarketplaceIcon';
 
 function fmtPrice(n) {
   return '₱' + Number(n).toLocaleString('en-PH');
 }
 
 export default function ProductModal({ product, onClose }) {
-  const { addItem } = useCart();
-  const navigate    = useNavigate();
+  const { addItem }     = useCart();
+  const { cartEnabled } = useSettings();
+  const navigate        = useNavigate();
   const [activeColor, setActiveColor] = useState(0);
   const [added, setAdded] = useState(false);
 
@@ -35,9 +38,9 @@ export default function ProductModal({ product, onClose }) {
     : JSON.parse(product.links || '{}');
 
   const MARKETPLACES = [
-    { key: 'shopee', label: '🛍️ Shopee',      bg: '#ee4d2d' },
-    { key: 'tiktok', label: '📱 TikTok Shop',  bg: '#111'    },
-    { key: 'lazada', label: '🛒 Lazada',       bg: '#0f146d' },
+    { key: 'shopee', label: 'Shopee',      bg: '#ee4d2d' },
+    { key: 'tiktok', label: 'TikTok Shop', bg: '#111'    },
+    { key: 'lazada', label: 'Lazada',      bg: '#0f146d' },
   ];
   const buyLinks = MARKETPLACES.filter(m => links[m.key]);
 
@@ -119,26 +122,32 @@ export default function ProductModal({ product, onClose }) {
           <div className="buy-links">
             {buyLinks.map(m => (
               <a key={m.key} href={links[m.key]} target="_blank" rel="noreferrer" className="buy" style={{ background: m.bg }}>
-                <span>{m.label}</span><span>→</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <MarketplaceIcon brand={m.key} size={18} /> {m.label}
+                </span><span>→</span>
               </a>
             ))}
-            <button onClick={handleOrderHere} className="buy" style={{ background: 'var(--blue)', border: 'none' }}>
-              <span>✓ Order Here</span><span>→</span>
-            </button>
+            {cartEnabled && (
+              <button onClick={handleOrderHere} className="buy" style={{ background: 'var(--blue)', border: 'none' }}>
+                <span>✓ Order Here</span><span>→</span>
+              </button>
+            )}
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            style={{
-              marginTop: 10, width: '100%', padding: '12px',
-              background: added ? '#166534' : 'transparent',
-              color: added ? '#fff' : 'var(--blue)',
-              border: '1.5px solid var(--line)', borderRadius: 12,
-              fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all .2s',
-            }}
-          >
-            {added ? '✓ Added to Cart' : '+ Add to Cart'}
-          </button>
+          {cartEnabled && (
+            <button
+              onClick={handleAddToCart}
+              style={{
+                marginTop: 10, width: '100%', padding: '12px',
+                background: added ? '#166534' : 'transparent',
+                color: added ? '#fff' : 'var(--blue)',
+                border: '1.5px solid var(--line)', borderRadius: 12,
+                fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all .2s',
+              }}
+            >
+              {added ? '✓ Added to Cart' : '+ Add to Cart'}
+            </button>
+          )}
         </div>
       </div>
     </div>

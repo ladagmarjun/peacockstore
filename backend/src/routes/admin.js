@@ -3,10 +3,12 @@ const router    = express.Router();
 const dashboard = require('../controllers/admin/dashboardController');
 const product   = require('../controllers/admin/productController');
 const category  = require('../controllers/admin/categoryController');
+const brand     = require('../controllers/admin/brandController');
 const store     = require('../controllers/admin/storeController');
 const banner    = require('../controllers/admin/bannerController');
 const order     = require('../controllers/admin/orderController');
 const user      = require('../controllers/admin/userController');
+const settings  = require('../controllers/admin/settingsController');
 const { requireAdmin } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
 
@@ -27,6 +29,11 @@ router.post('/categories',         category.createCategory);
 router.put('/categories/:id',      category.updateCategory);
 router.delete('/categories/:id',   category.deleteCategory);
 
+router.get('/brands',              brand.getBrands);
+router.post('/brands',             brand.createBrand);
+router.put('/brands/:id',          brand.updateBrand);
+router.delete('/brands/:id',       brand.deleteBrand);
+
 router.get('/banners',             banner.getBanners);
 router.post('/banners',            banner.createBanner);
 router.put('/banners/:id',         banner.updateBanner);
@@ -43,5 +50,8 @@ router.patch('/orders/:id/status', order.updateOrderStatus);
 
 router.get('/users',               user.getUsers);
 router.patch('/users/:id',         user.updateUser);
+
+router.get('/settings',            settings.getSettings);
+router.put('/settings',            settings.updateSettings);
 
 module.exports = router;

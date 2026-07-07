@@ -21,11 +21,13 @@ export default function ProductFormPage() {
 
   const [form,       setForm]       = useState(EMPTY);
   const [categories, setCategories] = useState([]);
+  const [brands,     setBrands]     = useState([]);
   const [error,      setError]      = useState('');
   const [loading,    setLoading]    = useState(false);
 
   useEffect(() => {
     api.adminProducts().then(d => setCategories(d.categories.filter(c => c.slug !== 'all')));
+    api.adminBrands().then(setBrands).catch(() => {});
     if (isEdit) {
       api.adminProduct(id).then(({ product, categories: cats }) => {
         const colors = Array.isArray(product.colors) ? product.colors : JSON.parse(product.colors || '[]');
@@ -135,7 +137,13 @@ export default function ProductFormPage() {
         <div className="form-row">
           <div className="form-group">
             <label>Brand</label>
-            <input name="brand" value={form.brand} onChange={change} placeholder="e.g. Peacock Genuine Leather" />
+            <select name="brand" value={form.brand} onChange={change}>
+              <option value="">— None —</option>
+              {brands.map(b => <option key={b.id} value={b.name}>{b.name}</option>)}
+              {form.brand && !brands.some(b => b.name === form.brand) && (
+                <option value={form.brand}>{form.brand}</option>
+              )}
+            </select>
           </div>
         </div>
 

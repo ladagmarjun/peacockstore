@@ -12,9 +12,11 @@ export default function AdminLayout({ children }) {
     { to: '/admin/products', icon: '👜', label: 'Products'  },
     { to: '/admin/banners',  icon: '🖼️', label: 'Slideshow' },
     { to: '/admin/categories', icon: '🏷️', label: 'Categories' },
+    { to: '/admin/brands',   icon: '™️', label: 'Brands'    },
     { to: '/admin/stores',   icon: '📍', label: 'Stores'    },
     { to: '/admin/orders',   icon: '📦', label: 'Orders'    },
     { to: '/admin/users',    icon: '👤', label: 'Users'     },
+    { to: '/admin/settings', icon: '⚙️', label: 'Settings'  },
   ];
 
   const handleLogout = async () => { await logout(); navigate('/'); };
