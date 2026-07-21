@@ -26,5 +26,8 @@ jobs:
           port:     ${{ secrets.VPS_PORT }}
           script_stop: true
           script: |
+            set -e
             cd ${{ secrets.VPS_APP_PATH }}
-            ./deploy.sh
+            git fetch --prune origin
+            git reset --hard origin/master
+            bash deploy.sh

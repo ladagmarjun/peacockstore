@@ -15,10 +15,6 @@ command -v pm2 >/dev/null || { echo "pm2 not on PATH"; exit 127; }
 
 cd "$(dirname "$0")"
 
-echo "→ pulling master"
-git fetch --prune origin
-git reset --hard origin/master
-
 echo "→ installing dependencies"
 npm --prefix backend  ci --omit=dev
 npm --prefix frontend ci
