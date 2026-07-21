@@ -11,7 +11,6 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 export PATH="$HOME/.npm-global/bin:/usr/local/bin:$PATH"
 
 command -v npm >/dev/null || { echo "npm not on PATH"; exit 127; }
-command -v pm2 >/dev/null || { echo "pm2 not on PATH"; exit 127; }
 
 cd "$(dirname "$0")"
 
@@ -26,6 +25,6 @@ echo "→ building frontend"
 npm run build
 
 echo "→ restarting app"
-pm2 restart peacock --update-env
+sudo -n systemctl restart peacock
 
 echo "✓ deployed $(git rev-parse --short HEAD)"
