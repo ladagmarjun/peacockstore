@@ -4,9 +4,15 @@ const session      = require('express-session');
 const cors         = require('cors');
 const cookieParser = require('cookie-parser');
 const path         = require('path');
+const pgSession    = require('connect-pg-simple')(session);
+const { pool }     = require('./src/config/database');
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
+
+// Behind CloudPanel's nginx: without this, express-session sees a plain HTTP
+// connection and silently refuses to set the `secure` cookie — nobody can log in.
+if (isProd) app.set('trust proxy', 1);
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use(cors({
@@ -21,6 +27,7 @@ app.use(cookieParser());
 
 // ─── Session ──────────────────────────────────────────────────────────────────
 app.use(session({
+  store: new pgSession({ pool, tableName: 'user_sessions', createTableIfMissing: true }),
   secret: process.env.SESSION_SECRET || 'peacock-secret-change-me',
   resave: false,
   saveUninitialized: false,

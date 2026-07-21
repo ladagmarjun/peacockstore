@@ -1,8 +1,14 @@
 node_modules/
 .env
 *.log
-public/uploads/
 .DS_Store
+
+# Build output — regenerated on the server by `npm run build`
+frontend/dist/
+
+# Customer-uploaded product images live on the server, not in git
+backend/uploads/products/*
+!backend/uploads/products/.gitkeep
 frontend/dist/
 backend/uploads/products/*
 !backend/uploads/products/.gitkeep
