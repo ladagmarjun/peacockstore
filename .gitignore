@@ -3,3 +3,6 @@ node_modules/
 *.log
 public/uploads/
 .DS_Store
+frontend/dist/
+backend/uploads/products/*
+!backend/uploads/products/.gitkeep

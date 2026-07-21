@@ -79,7 +79,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <a href="/#stores">Stores</a>
+          <a href="/#stores">Find a Store</a>
           <a href="/#contact">Contact</a>
         </nav>
 
@@ -143,7 +143,7 @@ export default function Navbar() {
                 ))}
           </div>
 
-          <a href="/#stores" onClick={closeMenu}>Stores</a>
+          <a href="/#stores" onClick={closeMenu}>Find a Store</a>
           <a href="/#contact" onClick={closeMenu}>Contact</a>
         </div>
       )}
