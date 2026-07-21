@@ -2,6 +2,17 @@
 # Deploy Peacock on the VPS. Run as the CloudPanel site user, not root.
 set -euo pipefail
 
+# A non-interactive SSH session (what CI gets) does not source ~/.bashrc, so an
+# nvm-installed node/npm is absent from PATH and every command exits 127.
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+# shellcheck disable=SC1091
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use && nvm use --lts >/dev/null
+
+export PATH="$HOME/.npm-global/bin:/usr/local/bin:$PATH"
+
+command -v npm >/dev/null || { echo "npm not on PATH"; exit 127; }
+command -v pm2 >/dev/null || { echo "pm2 not on PATH"; exit 127; }
+
 cd "$(dirname "$0")"
 
 echo "→ pulling master"
