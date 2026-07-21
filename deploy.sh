@@ -5,8 +5,13 @@ set -euo pipefail
 # A non-interactive SSH session (what CI gets) does not source ~/.bashrc, so an
 # nvm-installed node/npm is absent from PATH and every command exits 127.
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-# shellcheck disable=SC1091
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use && nvm use --lts >/dev/null
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  # nvm.sh reads unset variables, which `set -u` treats as fatal.
+  set +u
+  # shellcheck disable=SC1091
+  . "$NVM_DIR/nvm.sh"
+  set -u
+fi
 
 export PATH="$HOME/.npm-global/bin:/usr/local/bin:$PATH"
 
