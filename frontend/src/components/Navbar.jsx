@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -14,11 +14,26 @@ export default function Navbar() {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands]         = useState([]);
   const [menuOpen, setMenuOpen]     = useState(false);
+  // Which desktop dropdown is open ('cat' | 'brand' | null). Opening on click
+  // (not only CSS :hover) keeps the menu usable on touch devices, where a
+  // hover-only dropdown opens on the first tap but gets stuck afterwards.
+  const [openDrop, setOpenDrop]     = useState(null);
+  const menuRef                     = useRef(null);
 
   useEffect(() => {
     api.getCategories().then(cs => setCategories(cs.filter(c => c.slug !== 'all'))).catch(() => {});
     api.getBrands().then(setBrands).catch(() => {});
   }, []);
+
+  // Close the open dropdown when clicking anywhere outside the desktop menu.
+  useEffect(() => {
+    if (!openDrop) return;
+    const onDocClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setOpenDrop(null);
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [openDrop]);
 
   const handleLogout = async () => {
     await logout();
@@ -54,27 +69,49 @@ export default function Navbar() {
           )}
         </Link>
 
-        <nav className="menu">
+        <nav className="menu" ref={menuRef}>
           <a href="/#shop" onClick={goToShop}>Shop</a>
 
-          <div className="menu-item has-dropdown">
-            <button type="button" className="menu-trigger">Categories <span className="caret">▾</span></button>
+          <div
+            className={`menu-item has-dropdown${openDrop === 'cat' ? ' open' : ''}`}
+            onMouseEnter={() => setOpenDrop('cat')}
+            onMouseLeave={() => setOpenDrop(null)}
+          >
+            <button
+              type="button"
+              className="menu-trigger"
+              aria-expanded={openDrop === 'cat'}
+              onClick={() => setOpenDrop('cat')}
+            >
+              Categories <span className="caret">▾</span>
+            </button>
             <div className="dropdown-panel">
               {categories.length === 0
                 ? <span className="dropdown-empty">No categories</span>
                 : categories.map(c => (
-                    <Link key={c.slug} to={`/?cat=${c.slug}`}>{c.name}</Link>
+                    <Link key={c.slug} to={`/?cat=${c.slug}`} onClick={() => setOpenDrop(null)}>{c.name}</Link>
                   ))}
             </div>
           </div>
 
-          <div className="menu-item has-dropdown">
-            <button type="button" className="menu-trigger">Brands <span className="caret">▾</span></button>
+          <div
+            className={`menu-item has-dropdown${openDrop === 'brand' ? ' open' : ''}`}
+            onMouseEnter={() => setOpenDrop('brand')}
+            onMouseLeave={() => setOpenDrop(null)}
+          >
+            <button
+              type="button"
+              className="menu-trigger"
+              aria-expanded={openDrop === 'brand'}
+              onClick={() => setOpenDrop('brand')}
+            >
+              Brands <span className="caret">▾</span>
+            </button>
             <div className="dropdown-panel">
               {brands.length === 0
                 ? <span className="dropdown-empty">No brands yet</span>
                 : brands.map(b => (
-                    <Link key={b.id} to={`/?brand=${encodeURIComponent(b.name)}`}>{b.name}</Link>
+                    <Link key={b.id} to={`/?brand=${encodeURIComponent(b.name)}`} onClick={() => setOpenDrop(null)}>{b.name}</Link>
                   ))}
             </div>
           </div>

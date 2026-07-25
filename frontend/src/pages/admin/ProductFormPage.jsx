@@ -30,12 +30,16 @@ export default function ProductFormPage() {
     api.adminBrands().then(setBrands).catch(() => {});
     if (isEdit) {
       api.adminProduct(id).then(({ product, categories: cats }) => {
-        const colors = Array.isArray(product.colors) ? product.colors : JSON.parse(product.colors || '[]');
-        const images = Array.isArray(product.images) ? product.images : JSON.parse(product.images || '[]');
-        const links  = product.links && typeof product.links === 'object' ? product.links : JSON.parse(product.links || '{}');
+        // Pull `links` out of the spread: the flat link_* fields below are the
+        // form's source of truth. Leaking the raw links object into the payload
+        // makes the backend's buildLinks() read it instead of the edited fields.
+        const { links: rawLinks, ...rest } = product;
+        const colors = Array.isArray(rest.colors) ? rest.colors : JSON.parse(rest.colors || '[]');
+        const images = Array.isArray(rest.images) ? rest.images : JSON.parse(rest.images || '[]');
+        const links  = rawLinks && typeof rawLinks === 'object' ? rawLinks : JSON.parse(rawLinks || '{}');
         setForm({
           ...EMPTY,
-          ...product,
+          ...rest,
           color1: colors[0] || '#7a1414',
           color2: colors[1] || '#3a2418',
           color3: colors[2] || '#1c1c1c',

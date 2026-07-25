@@ -80,10 +80,13 @@ function buildProductData(body) {
 
 // Marketplace links: keep only the ones that actually have a URL.
 function buildLinks(body) {
-  const src = body.links && typeof body.links === 'object' ? body.links : body;
+  const nested = body.links && typeof body.links === 'object' ? body.links : {};
   const out = {};
   for (const key of ['shopee', 'lazada', 'tiktok']) {
-    const url = (src[key] || src[`link_${key}`] || '').trim();
+    // Prefer an explicit flat field (link_shopee / shopee) — including an empty
+    // string, which means "clear this link" — over the nested links object.
+    const flat = body[`link_${key}`] ?? body[key];
+    const url = (flat ?? nested[key] ?? '').trim();
     if (url) out[key] = url;
   }
   return out;
