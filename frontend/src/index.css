@@ -234,7 +234,8 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ── Shop section ─────────────────────────────────────── */
-.shop { padding: 84px 0 30px; }
+/* Vertical only — keeps the horizontal padding from the shared .wrap class. */
+.shop { padding-top: 84px; padding-bottom: 30px; }
 .shop-head {
   display: flex; align-items: flex-end; justify-content: space-between;
   margin-bottom: 38px; flex-wrap: wrap; gap: 18px;
@@ -340,7 +341,7 @@ button { font-family: inherit; cursor: pointer; }
 .buy:hover { transform: translateY(-2px); filter: brightness(1.06); }
 
 /* ── Stores ───────────────────────────────────────────── */
-.stores { padding: 84px 0; text-align: center; }
+.stores { padding-top: 84px; padding-bottom: 84px; text-align: center; }
 .stores h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px,4vw,50px); font-weight: 700; color: var(--blue); margin-bottom: 6px; }
 .stores .sub { color: var(--muted); margin-bottom: 38px; font-size: 16px; }
 .store-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
@@ -488,7 +489,7 @@ button { font-family: inherit; cursor: pointer; }
   width: 520px; height: 520px; border-radius: 50%;
   background: radial-gradient(circle, rgba(245,3,0,.08), transparent 65%);
 }
-.lhero-inner { position: relative; z-index: 2; padding: 96px 0 100px; max-width: 680px; }
+.lhero-inner { position: relative; z-index: 2; padding-top: 96px; padding-bottom: 100px; max-width: 680px; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 12px; letter-spacing: .26em; text-transform: uppercase;
@@ -573,7 +574,7 @@ button { font-family: inherit; cursor: pointer; }
 /* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 900px) {
   .menu { display: none; }
-  .lhero-inner { padding: 64px 0 72px; }
+  .lhero-inner { padding-top: 64px; padding-bottom: 72px; }
   .mk-grid { grid-template-columns: 1fr; max-width: 460px; }
   .banner-inner { grid-template-columns: 1fr; }
   .banner-text { padding: 56px 0; }
@@ -589,7 +590,32 @@ button { font-family: inherit; cursor: pointer; }
   .admin-sidebar { width: 180px; }
 }
 @media (max-width: 560px) {
-  .grid { grid-template-columns: 1fr; }
+  /* Hero slider on phones: smaller headline, tighter padding, and hide the
+     side arrows (they overlap the text) — dots + autoplay handle navigation. */
+  .hero-slide   { height: clamp(300px, 64vw, 380px); }
+  .hero-overlay {
+    padding: 0 22px;
+    background: linear-gradient(90deg, rgba(10,42,64,.82) 0%, rgba(10,42,64,.48) 58%, rgba(10,42,64,.12) 100%);
+  }
+  .hero-overlay h2 { font-size: clamp(26px, 7.2vw, 36px); max-width: 100%; }
+  .hero-overlay p  { font-size: 14px; max-width: 100%; margin: 10px 0 18px; }
+  .hero-arrow { display: none; }
+  .hero-dots  { bottom: 14px; }
+
+  /* Product section on phones: two compact columns with tighter cards. */
+  .wrap { padding: 0 22px; }
+  .shop { padding-top: 48px; padding-bottom: 24px; }
+  .shop-head { margin-bottom: 24px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .card-body { padding: 12px 13px 15px; gap: 4px; }
+  .card-cat  { font-size: 10px; letter-spacing: .12em; }
+  .card-name { font-size: 18px; }
+  .card-img .glyph { font-size: 56px; }
+  .card-foot { flex-wrap: wrap; gap: 6px; padding-top: 10px; }
+  .price { font-size: 15px; }
+  .price s { font-size: 12px; }
+  .view-link { font-size: 12px; }
+
   .store-grid { grid-template-columns: 1fr; }
   .foot-grid { grid-template-columns: 1fr; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
