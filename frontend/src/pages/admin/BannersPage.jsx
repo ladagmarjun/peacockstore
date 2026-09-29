@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { api } from '../../services/api';
+import { api, assetUrl } from '../../services/api';
 
 // Required / recommended cover dimensions.
 const REC_W = 1600;
@@ -128,7 +128,7 @@ export default function BannersPage() {
 
             {form.image_url && (
               <div style={{ marginTop: 12 }}>
-                <img src={form.image_url} alt="preview"
+                <img src={assetUrl(form.image_url)} alt="preview"
                   style={{ width: '100%', maxWidth: 520, aspectRatio: `${REC_W} / ${REC_H}`, objectFit: 'cover', borderRadius: 10, border: '1px solid var(--line)' }} />
               </div>
             )}
@@ -185,7 +185,7 @@ export default function BannersPage() {
             ) : banners.map(b => (
               <tr key={b.id}>
                 <td>{b.sort_order}</td>
-                <td><img src={b.image_url} alt="" style={{ width: 120, height: 45, objectFit: 'cover', borderRadius: 6 }} /></td>
+                <td><img src={assetUrl(b.image_url)} alt="" style={{ width: 120, height: 45, objectFit: 'cover', borderRadius: 6 }} /></td>
                 <td>{b.headline || <span style={{ color: 'var(--muted)' }}>—</span>}</td>
                 <td>{b.is_active ? '✅' : '❌'}</td>
                 <td>

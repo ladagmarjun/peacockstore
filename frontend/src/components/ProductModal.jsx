@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useSettings } from '../context/SettingsContext';
 import MarketplaceIcon from './MarketplaceIcon';
+import { assetUrl } from '../services/api';
 
 function fmtPrice(n) {
-  return '₱' + Number(n).toLocaleString('en-PH');
+  return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 }
 
 export default function ProductModal({ product, onClose }) {
-  const { addItem }     = useCart();
-  const { cartEnabled } = useSettings();
-  const navigate        = useNavigate();
   const [activeColor, setActiveColor] = useState(0);
-  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     setActiveColor(0);
-    setAdded(false);
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -50,24 +43,12 @@ export default function ProductModal({ product, onClose }) {
   const swatches  = hasImages ? images.map(im => im.color).filter(Boolean) : colors;
   const activeImg = hasImages ? images[activeColor] : null;
 
-  const handleAddToCart = () => {
-    addItem(product, swatches[activeColor] || null);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
-
-  const handleOrderHere = () => {
-    addItem(product, swatches[activeColor] || null);
-    onClose();
-    navigate('/checkout');
-  };
-
   return (
     <div className="overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="detail">
         <div className="detail-img">
           {activeImg
-            ? <img src={activeImg.url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <img src={assetUrl(activeImg.url)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <div className="glyph">{product.glyph}</div>
           }
         </div>
@@ -78,7 +59,7 @@ export default function ProductModal({ product, onClose }) {
           <h3>{product.name}</h3>
 
           <div className="rate">
-            <span style={{ color: 'var(--red)' }}>
+            <span className="stars">
               {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
             </span>
             <span>({product.review_count} reviews)</span>
@@ -127,27 +108,7 @@ export default function ProductModal({ product, onClose }) {
                 </span><span>→</span>
               </a>
             ))}
-            {cartEnabled && (
-              <button onClick={handleOrderHere} className="buy" style={{ background: 'var(--blue)', border: 'none' }}>
-                <span>✓ Order Here</span><span>→</span>
-              </button>
-            )}
           </div>
-
-          {cartEnabled && (
-            <button
-              onClick={handleAddToCart}
-              style={{
-                marginTop: 10, width: '100%', padding: '12px',
-                background: added ? '#166534' : 'transparent',
-                color: added ? '#fff' : 'var(--blue)',
-                border: '1.5px solid var(--line)', borderRadius: 12,
-                fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all .2s',
-              }}
-            >
-              {added ? '✓ Added to Cart' : '+ Add to Cart'}
-            </button>
-          )}
         </div>
       </div>
     </div>

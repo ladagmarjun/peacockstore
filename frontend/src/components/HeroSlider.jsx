@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { assetUrl } from '../services/api';
 
 export default function HeroSlider({ banners }) {
   const [i, setI] = useState(0);
@@ -21,12 +22,12 @@ export default function HeroSlider({ banners }) {
           const tagProps = b.link_url ? { href: b.link_url } : {};
           return (
             <Tag className="hero-slide" key={b.id} {...tagProps}>
-              <img src={b.image_url} alt={b.headline || 'Peacock Leather'} />
+              <img src={assetUrl(b.image_url)} alt={b.headline || 'Peacock Leather'} />
               {(b.headline || b.subtext) && (
                 <div className="hero-overlay">
                   {b.headline && <h2>{b.headline}</h2>}
                   {b.subtext && <p>{b.subtext}</p>}
-                  {b.link_url && <span className="btn hero-cta">Shop Now →</span>}
+                  {b.link_url && <span className="btn-outline-light">Shop Now</span>}
                 </div>
               )}
             </Tag>

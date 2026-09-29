@@ -1,14 +1,38 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
-import { useSettings } from '../context/SettingsContext';
 import { api } from '../services/api';
+
+const ANNOUNCEMENTS = [
+  'Genuine leather goods, handcrafted to last',
+  'Ships nationwide — also on Shopee, Lazada & TikTok Shop',
+  'Visit our store and feel the quality of every stitch',
+];
+
+const Caret = () => (
+  <svg className="caret" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+    <path d="M1 1l4 4 4-4" />
+  </svg>
+);
+
+function AnnouncementBar() {
+  const [i, setI] = useState(0);
+  const n = ANNOUNCEMENTS.length;
+  useEffect(() => {
+    const t = setInterval(() => setI(p => (p + 1) % n), 5000);
+    return () => clearInterval(t);
+  }, [n]);
+  return (
+    <div className="announce">
+      <button aria-label="Previous announcement" onClick={() => setI((i - 1 + n) % n)}>‹</button>
+      <p key={i}>{ANNOUNCEMENTS[i]}</p>
+      <button aria-label="Next announcement" onClick={() => setI((i + 1) % n)}>›</button>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const { user, logout }   = useAuth();
-  const { count }          = useCart();
-  const { cartEnabled }    = useSettings();
   const navigate           = useNavigate();
   const [logoOk, setLogoOk]       = useState(true);
   const [categories, setCategories] = useState([]);
@@ -53,100 +77,35 @@ export default function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  const dropdown = (key, label, items, empty, toHref, keyOf, nameOf) => (
+    <div
+      className={`menu-item has-dropdown${openDrop === key ? ' open' : ''}`}
+      onMouseEnter={() => setOpenDrop(key)}
+      onMouseLeave={() => setOpenDrop(null)}
+    >
+      <button
+        type="button"
+        className="menu-trigger"
+        aria-expanded={openDrop === key}
+        onClick={() => setOpenDrop(key)}
+      >
+        {label} <Caret />
+      </button>
+      <div className="dropdown-panel">
+        {items.length === 0
+          ? <span className="dropdown-empty">{empty}</span>
+          : items.map(it => (
+              <Link key={keyOf(it)} to={toHref(it)} onClick={() => setOpenDrop(null)}>{nameOf(it)}</Link>
+            ))}
+      </div>
+    </div>
+  );
+
   return (
-    <header className="site-header">
-      <div className="wrap nav">
-        <Link to="/" className="logo-text">
-          {logoOk ? (
-            <img
-              src="/peacock logo.jpg"
-              alt="Peacock Genuine Leather"
-              className="logo-img"
-              onError={() => setLogoOk(false)}
-            />
-          ) : (
-            <>Peacock <span>Genuine Leather</span></>
-          )}
-        </Link>
-
-        <nav className="menu" ref={menuRef}>
-          <a href="/#shop" onClick={goToShop}>Shop</a>
-
-          <div
-            className={`menu-item has-dropdown${openDrop === 'cat' ? ' open' : ''}`}
-            onMouseEnter={() => setOpenDrop('cat')}
-            onMouseLeave={() => setOpenDrop(null)}
-          >
-            <button
-              type="button"
-              className="menu-trigger"
-              aria-expanded={openDrop === 'cat'}
-              onClick={() => setOpenDrop('cat')}
-            >
-              Categories <span className="caret">▾</span>
-            </button>
-            <div className="dropdown-panel">
-              {categories.length === 0
-                ? <span className="dropdown-empty">No categories</span>
-                : categories.map(c => (
-                    <Link key={c.slug} to={`/?cat=${c.slug}`} onClick={() => setOpenDrop(null)}>{c.name}</Link>
-                  ))}
-            </div>
-          </div>
-
-          <div
-            className={`menu-item has-dropdown${openDrop === 'brand' ? ' open' : ''}`}
-            onMouseEnter={() => setOpenDrop('brand')}
-            onMouseLeave={() => setOpenDrop(null)}
-          >
-            <button
-              type="button"
-              className="menu-trigger"
-              aria-expanded={openDrop === 'brand'}
-              onClick={() => setOpenDrop('brand')}
-            >
-              Brands <span className="caret">▾</span>
-            </button>
-            <div className="dropdown-panel">
-              {brands.length === 0
-                ? <span className="dropdown-empty">No brands yet</span>
-                : brands.map(b => (
-                    <Link key={b.id} to={`/?brand=${encodeURIComponent(b.name)}`} onClick={() => setOpenDrop(null)}>{b.name}</Link>
-                  ))}
-            </div>
-          </div>
-
-          <a href="/#stores">Find a Store</a>
-          <a href="/#contact">Contact</a>
-        </nav>
-
-        <div className="nav-right">
-          {cartEnabled && (
-            <Link to="/checkout" className="nav-link" style={{ position: 'relative' }}>
-              🛒 Cart{count > 0 && (
-                <span style={{
-                  background: 'var(--red)', color: '#fff', borderRadius: '50%',
-                  width: 18, height: 18, fontSize: 11, fontWeight: 700,
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  position: 'absolute', top: -6, right: -10,
-                }}>{count}</span>
-              )}
-            </Link>
-          )}
-
-          {user ? (
-            <>
-              {user.role === 'admin' && (
-                <Link to="/admin" className="nav-link-red">Admin</Link>
-              )}
-              <button onClick={handleLogout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                Logout
-              </button>
-            </>
-          ) : (
-            cartEnabled && <Link to="/login" className="nav-link">Login</Link>
-          )}
-
+    <>
+      <AnnouncementBar />
+      <header className="site-header">
+        <div className="wrap nav">
           <button
             className="hamburger"
             aria-label="Menu"
@@ -155,35 +114,65 @@ export default function Navbar() {
           >
             {menuOpen ? '✕' : '☰'}
           </button>
-        </div>
-      </div>
 
-      {menuOpen && (
-        <div className="mobile-menu">
-          <a href="/#shop" onClick={(e) => { goToShop(e); closeMenu(); }}>Shop</a>
+          <Link to="/" className="logo-text">
+            {logoOk ? (
+              <img
+                src="/peacock logo.jpg"
+                alt="Peacock Genuine Leather"
+                className="logo-img"
+                onError={() => setLogoOk(false)}
+              />
+            ) : (
+              <>Peacock <span>Genuine Leather</span></>
+            )}
+          </Link>
 
-          <div className="mobile-group">
-            <span className="mobile-group-title">Categories</span>
-            {categories.length === 0
-              ? <span className="dropdown-empty">No categories</span>
-              : categories.map(c => (
-                  <Link key={c.slug} to={`/?cat=${c.slug}`} onClick={closeMenu}>{c.name}</Link>
-                ))}
+          <nav className="menu" ref={menuRef}>
+            <a href="/#shop" onClick={goToShop}>Shop All</a>
+            {dropdown('cat', 'Categories', categories, 'No categories',
+              c => `/?cat=${c.slug}`, c => c.slug, c => c.name)}
+            {dropdown('brand', 'Brands', brands, 'No brands yet',
+              b => `/?brand=${encodeURIComponent(b.name)}`, b => b.id, b => b.name)}
+            <Link to="/our-story">Our Story</Link>
+            <a href="/#stores">Stores</a>
+            <a href="/#contact">Contact</a>
+          </nav>
+
+          <div className="nav-right">
+            {user?.role === 'admin' && <Link to="/admin" className="nav-link">Admin</Link>}
+            {user && <button onClick={handleLogout} className="nav-link">Logout</button>}
           </div>
-
-          <div className="mobile-group">
-            <span className="mobile-group-title">Brands</span>
-            {brands.length === 0
-              ? <span className="dropdown-empty">No brands yet</span>
-              : brands.map(b => (
-                  <Link key={b.id} to={`/?brand=${encodeURIComponent(b.name)}`} onClick={closeMenu}>{b.name}</Link>
-                ))}
-          </div>
-
-          <a href="/#stores" onClick={closeMenu}>Find a Store</a>
-          <a href="/#contact" onClick={closeMenu}>Contact</a>
         </div>
-      )}
-    </header>
+
+        {menuOpen && (
+          <div className="mobile-menu">
+            <a href="/#shop" onClick={(e) => { goToShop(e); closeMenu(); }}>Shop All</a>
+
+            <div className="mobile-group">
+              <span className="mobile-group-title">Categories</span>
+              {categories.length === 0
+                ? <span className="dropdown-empty">No categories</span>
+                : categories.map(c => (
+                    <Link key={c.slug} to={`/?cat=${c.slug}`} onClick={closeMenu}>{c.name}</Link>
+                  ))}
+            </div>
+
+            <div className="mobile-group">
+              <span className="mobile-group-title">Brands</span>
+              {brands.length === 0
+                ? <span className="dropdown-empty">No brands yet</span>
+                : brands.map(b => (
+                    <Link key={b.id} to={`/?brand=${encodeURIComponent(b.name)}`} onClick={closeMenu}>{b.name}</Link>
+                  ))}
+            </div>
+
+            <Link to="/our-story" onClick={closeMenu}>Our Story</Link>
+            <a href="/#stores" onClick={closeMenu}>Stores</a>
+            <a href="/#contact" onClick={closeMenu}>Contact</a>
+          </div>
+        )}
+      </header>
+    </>
   );
 }

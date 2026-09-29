@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import { api } from '../../services/api';
+import { api, assetUrl } from '../../services/api';
 
 const GLYPHS = ['👜','🎒','👝','🪢','🧳','💼','🥡'];
 const TAGS   = ['', 'New', 'Sale', 'Bestseller'];
@@ -201,7 +201,7 @@ export default function ProductFormPage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 14 }}>
               {form.images.map((img, i) => (
                 <div key={i} style={{ width: 120, border: '1px solid var(--line)', borderRadius: 10, padding: 8, textAlign: 'center' }}>
-                  <img src={img.url} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 6 }} />
+                  <img src={assetUrl(img.url)} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 6 }} />
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
                     <input
                       type="color"

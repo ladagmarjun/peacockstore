@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy Peacock on the VPS. Run as the CloudPanel site user, not root.
+# Deploy the Peacock storefront (static files in frontend/dist) on the VPS. Run as the CloudPanel site user, not root.
 set -euo pipefail
 
 # A non-interactive SSH session (what CI gets) does not source ~/.bashrc, so an
@@ -19,17 +19,12 @@ command -v npm >/dev/null || { echo "npm not on PATH"; exit 127; }
 
 cd "$(dirname "$0")"
 
-echo "→ installing dependencies"
-npm --prefix backend  ci --omit=dev
-npm --prefix frontend ci
+[ -f frontend/.env.production ] || { echo "frontend/.env.production missing (needs VITE_API_URL)"; exit 1; }
 
-echo "→ running migrations"
-npm run migrate
+echo "→ installing dependencies"
+npm --prefix frontend ci
 
 echo "→ building frontend"
 npm run build
-
-echo "→ restarting app"
-sudo -n systemctl restart peacock
 
 echo "✓ deployed $(git rev-parse --short HEAD)"

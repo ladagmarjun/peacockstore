@@ -1,13 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
-import { SettingsProvider } from './context/SettingsContext';
 
 import HomePage              from './pages/HomePage';
-import CheckoutPage          from './pages/CheckoutPage';
-import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import LoginPage             from './pages/LoginPage';
-import RegisterPage          from './pages/RegisterPage';
+import OurStoryPage          from './pages/OurStoryPage';
 
 import DashboardPage    from './pages/admin/DashboardPage';
 import ProductsPage     from './pages/admin/ProductsPage';
@@ -19,7 +15,6 @@ import BannersPage      from './pages/admin/BannersPage';
 import OrdersPage       from './pages/admin/OrdersPage';
 import OrderDetailPage  from './pages/admin/OrderDetailPage';
 import UsersPage        from './pages/admin/UsersPage';
-import SettingsPage     from './pages/admin/SettingsPage';
 
 function AdminRoute({ children }) {
   const { user, loading } = useAuth();
@@ -38,15 +33,11 @@ function AuthRoute({ children }) {
 export default function App() {
   return (
     <AuthProvider>
-      <SettingsProvider>
-      <CartProvider>
         <Routes>
           {/* Public */}
           <Route path="/"            element={<HomePage />} />
-          <Route path="/checkout"    element={<CheckoutPage />} />
-          <Route path="/orders/:id/confirmation" element={<OrderConfirmationPage />} />
+          <Route path="/our-story"   element={<OurStoryPage />} />
           <Route path="/login"       element={<AuthRoute><LoginPage /></AuthRoute>} />
-          <Route path="/register"    element={<AuthRoute><RegisterPage /></AuthRoute>} />
 
           {/* Admin */}
           <Route path="/admin"                   element={<AdminRoute><DashboardPage /></AdminRoute>} />
@@ -60,10 +51,7 @@ export default function App() {
           <Route path="/admin/orders"            element={<AdminRoute><OrdersPage /></AdminRoute>} />
           <Route path="/admin/orders/:id"        element={<AdminRoute><OrderDetailPage /></AdminRoute>} />
           <Route path="/admin/users"             element={<AdminRoute><UsersPage /></AdminRoute>} />
-          <Route path="/admin/settings"          element={<AdminRoute><SettingsPage /></AdminRoute>} />
         </Routes>
-      </CartProvider>
-      </SettingsProvider>
     </AuthProvider>
   );
 }

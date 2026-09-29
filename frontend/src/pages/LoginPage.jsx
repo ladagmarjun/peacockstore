@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
@@ -49,10 +49,6 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
-        <p style={{ marginTop: 20, fontSize: 14, color: 'var(--muted)' }}>
-          Don't have an account?{' '}
-          <Link to="/register" style={{ color: 'var(--red)', fontWeight: 700 }}>Register</Link>
-        </p>
       </div>
       <Footer />
     </>

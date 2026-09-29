@@ -1,4 +1,13 @@
-const BASE = '/api';
+// Origin of the REST API, e.g. https://api.peacock.com. Left empty in dev so
+// requests go through the Vite proxy (see vite.config.js).
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const BASE = API_URL + '/api';
+
+// The API returns uploaded images as root-relative paths (/uploads/...), which
+// must be resolved against the API origin, not the frontend's.
+export function assetUrl(url) {
+  return url && url.startsWith('/') ? API_URL + url : url;
+}
 
 async function request(path, options = {}) {
   const res = await fetch(BASE + path, {
@@ -25,11 +34,9 @@ export const api = {
   // Auth
   me:       ()       => request('/auth/me'),
   login:    (body)   => request('/auth/login',    { method: 'POST', body }),
-  register: (body)   => request('/auth/register', { method: 'POST', body }),
   logout:   ()       => request('/auth/logout',   { method: 'POST' }),
 
   // Shop
-  getSettings:   ()       => request('/settings'),
   getCategories: ()       => request('/categories'),
   getBrands:     ()       => request('/brands'),
   getStores:     ()       => request('/stores'),
@@ -37,8 +44,6 @@ export const api = {
   getProducts:   (cat)    => request('/products' + (cat && cat !== 'all' ? `?cat=${cat}` : '')),
   getProduct:    (slug)   => request(`/products/${slug}`),
   getProductById:(id)     => request(`/products/id/${id}`),
-  placeOrder:    (body)   => request('/orders', { method: 'POST', body }),
-  getOrder:      (id)     => request(`/orders/${id}`),
 
   // Admin
   adminDashboard:  ()         => request('/admin/dashboard'),
@@ -69,6 +74,4 @@ export const api = {
   adminUpdateOrderStatus: (id, status) => request(`/admin/orders/${id}/status`, { method: 'PATCH', body: { status } }),
   adminUsers:      ()         => request('/admin/users'),
   adminUpdateUser: (id, body) => request(`/admin/users/${id}`, { method: 'PATCH', body }),
-  adminSettings:       ()     => request('/admin/settings'),
-  adminUpdateSettings: (body) => request('/admin/settings', { method: 'PUT', body }),
 };

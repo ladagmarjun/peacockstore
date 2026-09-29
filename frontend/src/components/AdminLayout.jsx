@@ -16,7 +16,6 @@ export default function AdminLayout({ children }) {
     { to: '/admin/stores',   icon: '📍', label: 'Stores'    },
     { to: '/admin/orders',   icon: '📦', label: 'Orders'    },
     { to: '/admin/users',    icon: '👤', label: 'Users'     },
-    { to: '/admin/settings', icon: '⚙️', label: 'Settings'  },
   ];
 
   const handleLogout = async () => { await logout(); navigate('/'); };
