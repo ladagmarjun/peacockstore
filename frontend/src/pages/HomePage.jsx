@@ -27,6 +27,16 @@ const WHY = [
   },
 ];
 
+// Mid-page promo banner. Drop a 1600×600 image in /public and set `image` to use a photo;
+// leave it null for the plain navy background.
+const MID_BANNER = {
+  image:    null, // e.g. '/mid-banner.jpg'
+  eyebrow:  'Peacock Genuine Leather',
+  headline: 'Made to be carried for years',
+  text:     'Real leather that softens and ages with character — find the piece that fits your every day.',
+  cta:      { label: 'Shop All', href: '#shop' },
+};
+
 function coverOf(p) {
   const images = Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]');
   return images[0]?.url || p.image_url;
@@ -138,6 +148,19 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Mid-page promo banner */}
+      <section
+        className={`mid-banner${MID_BANNER.image ? ' has-image' : ''}`}
+        style={MID_BANNER.image ? { backgroundImage: `url(${MID_BANNER.image})` } : undefined}
+      >
+        <div className="mid-banner-inner">
+          {MID_BANNER.eyebrow && <span className="mid-banner-eyebrow">{MID_BANNER.eyebrow}</span>}
+          <h2>{MID_BANNER.headline}</h2>
+          {MID_BANNER.text && <p>{MID_BANNER.text}</p>}
+          {MID_BANNER.cta && <a className="btn-outline-light" href={MID_BANNER.cta.href}>{MID_BANNER.cta.label}</a>}
+        </div>
+      </section>
 
       {/* Shop by category */}
       {tiles.length > 0 && (
