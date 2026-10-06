@@ -31,9 +31,10 @@ jobs:
 
       - name: Build
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          # Accepted as either a variable or a secret (repo-level or the production environment).
+          VITE_API_URL: ${{ vars.VITE_API_URL || secrets.VITE_API_URL }}
         run: |
-          [ -n "$VITE_API_URL" ] || { echo "VITE_API_URL variable is not set"; exit 1; }
+          [ -n "$VITE_API_URL" ] || { echo "VITE_API_URL is not set (add it under Settings → Secrets and variables → Actions)"; exit 1; }
           npm run build
 
       # Replaces the site's web root (CloudPanel Root Directory: htdocs/<domain>/frontend/dist).
