@@ -5,5 +5,5 @@ node_modules/
 *.log
 .DS_Store
 
-# Build output — regenerated on the server by `npm run build`
+# Build output — built in GitHub Actions and uploaded to the VPS
 frontend/dist/
