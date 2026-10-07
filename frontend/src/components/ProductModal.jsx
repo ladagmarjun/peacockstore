@@ -7,10 +7,10 @@ function fmtPrice(n) {
 }
 
 export default function ProductModal({ product, onClose }) {
-  const [activeColor, setActiveColor] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
-    setActiveColor(0);
+    setActiveIdx(0);
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -37,11 +37,25 @@ export default function ProductModal({ product, onClose }) {
   ];
   const buyLinks = MARKETPLACES.filter(m => links[m.key]);
 
-  // Swatches come from the tagged photo colors when photos exist,
-  // otherwise fall back to the product's plain color list.
-  const hasImages = images.length > 0;
-  const swatches  = hasImages ? images.map(im => im.color).filter(Boolean) : colors;
-  const activeImg = hasImages ? images[activeColor] : null;
+  // Swatches come from the tagged photo colors (one per distinct color) when
+  // photos exist, otherwise fall back to the product's plain color list.
+  const n         = images.length;
+  const hasImages = n > 0;
+  const activeImg = hasImages ? images[activeIdx] : null;
+  const swatches  = hasImages
+    ? [...new Set(images.map(im => im.color).filter(Boolean))]
+    : colors;
+  const go = (idx) => setActiveIdx((idx + n) % n);
+
+  // No marketplace links: send shoppers to the store list on the home page.
+  const visitStore = (e) => {
+    const stores = document.getElementById('stores');
+    if (!stores) return; // not on the home page — let the link navigate there
+    e.preventDefault();
+    onClose();
+    // Scroll once the modal has unmounted, or the browser cancels it.
+    setTimeout(() => stores.scrollIntoView({ behavior: 'smooth' }));
+  };
 
   return (
     <div className="overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -51,6 +65,22 @@ export default function ProductModal({ product, onClose }) {
             ? <img src={assetUrl(activeImg.url)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <div className="glyph">{product.glyph}</div>
           }
+          {n > 1 && (
+            <>
+              <button className="detail-arrow prev" onClick={() => go(activeIdx - 1)} aria-label="Previous photo">‹</button>
+              <button className="detail-arrow next" onClick={() => go(activeIdx + 1)} aria-label="Next photo">›</button>
+              <div className="detail-dots">
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={idx === activeIdx ? 'active' : ''}
+                    onClick={() => setActiveIdx(idx)}
+                    aria-label={`Go to photo ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="detail-info">
@@ -90,25 +120,38 @@ export default function ProductModal({ product, onClose }) {
               {swatches.map((c, i) => (
                 <div
                   key={i}
-                  className={`sw${activeColor === i ? ' active' : ''}`}
+                  className={`sw${hasImages && activeImg?.color === c ? ' active' : ''}`}
                   style={{ background: c }}
                   title={hasImages ? 'View this color' : undefined}
-                  onClick={() => setActiveColor(i)}
+                  onClick={() => hasImages && setActiveIdx(images.findIndex(im => im.color === c))}
                 />
               ))}
             </div>
           )}
 
-          <div className="buy-label">Buy on</div>
-          <div className="buy-links">
-            {buyLinks.map(m => (
-              <a key={m.key} href={links[m.key]} target="_blank" rel="noreferrer" className="buy" style={{ background: m.bg }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <MarketplaceIcon brand={m.key} size={18} /> {m.label}
-                </span><span>→</span>
-              </a>
-            ))}
-          </div>
+          {buyLinks.length > 0 ? (
+            <>
+              <div className="buy-label">Buy on</div>
+              <div className="buy-links">
+                {buyLinks.map(m => (
+                  <a key={m.key} href={links[m.key]} target="_blank" rel="noreferrer" className="buy" style={{ background: m.bg }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                      <MarketplaceIcon brand={m.key} size={18} /> {m.label}
+                    </span><span>→</span>
+                  </a>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="buy-label">Available in store</div>
+              <div className="buy-links">
+                <a href="/#stores" className="buy buy-store" onClick={visitStore}>
+                  <span>Visit our store</span><span>→</span>
+                </a>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

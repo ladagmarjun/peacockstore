@@ -21,17 +21,13 @@ async function request(path, options = {}) {
   return data;
 }
 
-// Public catalog data (categories) is served by the store admin API. It answers
-// with `Access-Control-Allow-Origin: *`, so requests must go without cookies,
-// and wraps lists in a `{ data: [...] }` envelope.
-const CATALOG_URL = (import.meta.env.VITE_CATALOG_API_URL || 'https://storeadmin.peacockgenuineleather.com')
-  .replace(/\/$/, '') + '/api';
-
+// Public shop data answers with `Access-Control-Allow-Origin: *`, so requests
+// must go without cookies, and wraps results in a `{ data: ... }` envelope.
 async function catalogRequest(path) {
-  const res = await fetch(CATALOG_URL + path, { headers: { Accept: 'application/json' } });
+  const res = await fetch(BASE + path, { headers: { Accept: 'application/json' } });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
-  return Array.isArray(data) ? data : data.data;
+  return data && !Array.isArray(data) && 'data' in data ? data.data : data;
 }
 
 async function uploadFile(path, file) {
@@ -51,12 +47,12 @@ export const api = {
 
   // Shop
   getCategories: ()       => catalogRequest('/categories'),
-  getBrands:     ()       => request('/brands'),
-  getStores:     ()       => request('/stores'),
-  getBanners:    ()       => request('/banners'),
-  getProducts:   (cat)    => request('/products' + (cat && cat !== 'all' ? `?cat=${cat}` : '')),
-  getProduct:    (slug)   => request(`/products/${slug}`),
-  getProductById:(id)     => request(`/products/id/${id}`),
+  getBrands:     ()       => catalogRequest('/brands'),
+  getStores:     ()       => catalogRequest('/stores'),
+  getBanners:    (placement) => catalogRequest('/banners' + (placement ? `?placement=${placement}` : '')),
+  getProducts:   (cat)    => catalogRequest('/products' + (cat && cat !== 'all' ? `?cat=${cat}` : '')),
+  getProduct:    (slug)   => catalogRequest(`/products/${slug}`),
+  getProductById:(id)     => catalogRequest(`/products/id/${id}`),
 
   // Admin
   adminDashboard:  ()         => request('/admin/dashboard'),

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -38,7 +38,7 @@ export default function Navbar() {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands]         = useState([]);
   const [menuOpen, setMenuOpen]     = useState(false);
-  // Which desktop dropdown is open ('cat' | 'brand' | null). Opening on click
+  // Which desktop dropdown is open ('brand' | 'cat-<slug>' | null). Opening on click
   // (not only CSS :hover) keeps the menu usable on touch devices, where a
   // hover-only dropdown opens on the first tap but gets stuck afterwards.
   const [openDrop, setOpenDrop]     = useState(null);
@@ -76,6 +76,12 @@ export default function Navbar() {
   };
 
   const closeMenu = () => setMenuOpen(false);
+
+  // Top-level categories go in the menu; their children (e.g. Men → Wallet)
+  // go in a dropdown under them, led by an "All <parent>" link.
+  const parents    = categories.filter(c => c.parent_id == null);
+  const childrenOf = (p) => categories.filter(c => c.parent_id === p.id);
+  const catHref    = (c) => `/?cat=${c.slug}`;
 
   const dropdown = (key, label, items, empty, toHref, keyOf, nameOf) => (
     <div
@@ -130,8 +136,13 @@ export default function Navbar() {
 
           <nav className="menu" ref={menuRef}>
             <a href="/#shop" onClick={goToShop}>Shop All</a>
-            {dropdown('cat', 'Categories', categories, 'No categories',
-              c => `/?cat=${c.slug}`, c => c.slug, c => c.name)}
+            {parents.map(p => {
+              const kids = childrenOf(p);
+              return kids.length === 0
+                ? <Link key={p.slug} to={catHref(p)}>{p.name}</Link>
+                : <Fragment key={p.slug}>{dropdown(`cat-${p.slug}`, p.name, [{ ...p, name: `All ${p.name}` }, ...kids],
+                    '', catHref, c => c.slug, c => c.name)}</Fragment>;
+            })}
             {dropdown('brand', 'Brands', brands, 'No brands yet',
               b => `/?brand=${encodeURIComponent(b.name)}`, b => b.id, b => b.name)}
             <Link to="/our-story">Our Story</Link>
@@ -149,14 +160,20 @@ export default function Navbar() {
           <div className="mobile-menu">
             <a href="/#shop" onClick={(e) => { goToShop(e); closeMenu(); }}>Shop All</a>
 
-            <div className="mobile-group">
-              <span className="mobile-group-title">Categories</span>
-              {categories.length === 0
-                ? <span className="dropdown-empty">No categories</span>
-                : categories.map(c => (
-                    <Link key={c.slug} to={`/?cat=${c.slug}`} onClick={closeMenu}>{c.name}</Link>
-                  ))}
-            </div>
+            {parents.map(p => {
+              const kids = childrenOf(p);
+              return kids.length === 0
+                ? <Link key={p.slug} to={catHref(p)} onClick={closeMenu}>{p.name}</Link>
+                : (
+                  <div key={p.slug} className="mobile-group">
+                    <span className="mobile-group-title">{p.name}</span>
+                    <Link to={catHref(p)} onClick={closeMenu}>All {p.name}</Link>
+                    {kids.map(c => (
+                      <Link key={c.slug} to={catHref(c)} onClick={closeMenu}>{c.name}</Link>
+                    ))}
+                  </div>
+                );
+            })}
 
             <div className="mobile-group">
               <span className="mobile-group-title">Brands</span>

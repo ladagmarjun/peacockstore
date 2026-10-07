@@ -194,7 +194,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   background-size: cover; background-position: center;
 }
 .mid-banner.has-image { position: relative; }
-.mid-banner.has-image::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,.35); }
+.mid-banner.has-image.has-text::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,.35); }
 .mid-banner-inner {
   position: relative; min-height: clamp(280px, 28vw, 420px); padding: 56px 24px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -315,7 +315,19 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   animation: slideUp .25s ease;
 }
 @keyframes slideUp { from { transform: translateY(16px); } to { transform: translateY(0); } }
-.detail-img { background: var(--soft); display: flex; align-items: center; justify-content: center; min-height: 420px; }
+.detail-img { position: relative; background: var(--soft); display: flex; align-items: center; justify-content: center; min-height: 420px; }
+.detail-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.85); color: var(--ink); font-size: 24px; line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.detail-arrow:hover { background: #fff; }
+.detail-arrow.prev { left: 12px; }
+.detail-arrow.next { right: 12px; }
+.detail-dots { position: absolute; bottom: 14px; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; justify-content: center; }
+.detail-dots button { width: 8px; height: 8px; padding: 0; border: 1px solid var(--ink); border-radius: 50%; background: rgba(255,255,255,.7); cursor: pointer; }
+.detail-dots button.active { background: var(--ink); }
 .detail-img .glyph { font-size: 150px; }
 .detail-info { padding: 44px 40px; position: relative; }
 .close-btn {
@@ -341,6 +353,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   transition: filter .15s;
 }
 .buy:hover { filter: brightness(1.1); }
+.buy-store { background: var(--navy); }
 
 /* ── Footer ───────────────────────────────────────────── */
 .site-footer { border-top: 1px solid var(--line); padding: 56px 0 24px; }

@@ -8,7 +8,7 @@ export default function Footer() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    api.getCategories().then(cs => setCategories(cs.filter(c => c.slug !== 'all'))).catch(() => {});
+    api.getCategories().then(cs => setCategories(cs.filter(c => c.slug !== 'all' && c.parent_id == null))).catch(() => {});
   }, []);
 
   return (

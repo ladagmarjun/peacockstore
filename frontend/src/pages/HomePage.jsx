@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar       from '../components/Navbar';
 import Footer       from '../components/Footer';
@@ -27,8 +27,7 @@ const WHY = [
   },
 ];
 
-// Mid-page promo banner. Drop a 1600×600 image in /public and set `image` to use a photo;
-// leave it null for the plain navy background.
+// Fallback mid-page promo, shown when no `middle` banner is configured in the admin.
 const MID_BANNER = {
   image:    null, // e.g. '/mid-banner.jpg'
   eyebrow:  'Peacock Genuine Leather',
@@ -60,6 +59,7 @@ export default function HomePage() {
   const [categories,  setCategories]  = useState([]);
   const [stores,      setStores]      = useState([]);
   const [banners,     setBanners]     = useState([]);
+  const [midBanner,   setMidBanner]   = useState(null);
   const [selected,    setSelected]    = useState(null);
   const [loading,     setLoading]     = useState(true);
   const shopRef = useRef(null);
@@ -70,7 +70,8 @@ export default function HomePage() {
   useEffect(() => {
     api.getCategories().then(cs => setCategories(cs.filter(c => c.slug !== 'all'))).catch(() => {});
     api.getStores().then(setStores).catch(() => setStores([]));
-    api.getBanners().then(setBanners).catch(() => setBanners([]));
+    api.getBanners('hero').then(setBanners).catch(() => setBanners([]));
+    api.getBanners('middle').then(bs => setMidBanner(bs[0] || null)).catch(() => {});
     api.getProducts()
       .then(setProducts)
       .catch(() => setProducts([]))
@@ -97,8 +98,23 @@ export default function HomePage() {
     setSearchParams(next);
   };
 
+  // A category's own slug plus every descendant's, so a parent (e.g. Men)
+  // also matches products filed under its children (e.g. Wallet).
+  const slugsUnder = useCallback((slug) => {
+    const out = new Set([slug]);
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const c of categories) {
+        const parent = categories.find(p => p.id === c.parent_id);
+        if (parent && out.has(parent.slug) && !out.has(c.slug)) { out.add(c.slug); grew = true; }
+      }
+    }
+    return out;
+  }, [categories]);
+
+  const activeSlugs = activeCat === 'all' ? null : slugsUnder(activeCat);
   const shown = products.filter(p =>
-    (activeCat === 'all' || p.category_slug === activeCat) &&
+    (!activeSlugs || activeSlugs.has(p.category_slug)) &&
     (!activeBrand || (p.brand || '') === activeBrand)
   );
 
@@ -108,10 +124,22 @@ export default function HomePage() {
     return (tagged.length ? tagged : products).slice(0, 4);
   }, [products]);
 
-  // One tile per category that has at least one product, using its first photo.
+  // One tile per category that has at least one product (its own or a
+  // subcategory's), using that product's first photo.
   const tiles = useMemo(() => categories
-    .map(c => ({ ...c, product: products.find(p => p.category_slug === c.slug) }))
-    .filter(c => c.product), [categories, products]);
+    .map(c => {
+      const slugs = slugsUnder(c.slug);
+      return { ...c, product: products.find(p => slugs.has(p.category_slug)) };
+    })
+    .filter(c => c.product), [categories, products, slugsUnder]);
+
+  const mid = midBanner ? {
+    image:    assetUrl(midBanner.image_url),
+    headline: midBanner.headline,
+    text:     midBanner.subtext,
+    cta:      midBanner.link_url && { label: 'Shop Now', href: midBanner.link_url },
+  } : MID_BANNER;
+  const midHasText = mid.eyebrow || mid.headline || mid.text || mid.cta;
 
   return (
     <>
@@ -151,14 +179,14 @@ export default function HomePage() {
 
       {/* Mid-page promo banner */}
       <section
-        className={`mid-banner${MID_BANNER.image ? ' has-image' : ''}`}
-        style={MID_BANNER.image ? { backgroundImage: `url(${MID_BANNER.image})` } : undefined}
+        className={`mid-banner${mid.image ? ' has-image' : ''}${midHasText ? ' has-text' : ''}`}
+        style={mid.image ? { backgroundImage: `url(${mid.image})` } : undefined}
       >
         <div className="mid-banner-inner">
-          {MID_BANNER.eyebrow && <span className="mid-banner-eyebrow">{MID_BANNER.eyebrow}</span>}
-          <h2>{MID_BANNER.headline}</h2>
-          {MID_BANNER.text && <p>{MID_BANNER.text}</p>}
-          {MID_BANNER.cta && <a className="btn-outline-light" href={MID_BANNER.cta.href}>{MID_BANNER.cta.label}</a>}
+          {mid.eyebrow && <span className="mid-banner-eyebrow">{mid.eyebrow}</span>}
+          {mid.headline && <h2>{mid.headline}</h2>}
+          {mid.text && <p>{mid.text}</p>}
+          {mid.cta && <a className="btn-outline-light" href={mid.cta.href}>{mid.cta.label}</a>}
         </div>
       </section>
 
