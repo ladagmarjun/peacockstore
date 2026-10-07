@@ -29,13 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm --prefix frontend ci
 
+      # VITE_API_URL comes from frontend/.env.production (committed). Don't pass it
+      # via env here: an empty value would override the file.
       - name: Build
-        env:
-          # Accepted as either a variable or a secret (repo-level or the production environment).
-          VITE_API_URL: ${{ vars.VITE_API_URL || secrets.VITE_API_URL }}
         run: |
-          [ -n "$VITE_API_URL" ] || { echo "VITE_API_URL is not set (add it under Settings → Secrets and variables → Actions)"; exit 1; }
           npm run build
+          grep -rq "storeadmin" frontend/dist/assets || { echo "Build has no API URL - check frontend/.env.production"; exit 1; }
 
       # Replaces the site's web root (CloudPanel Root Directory: htdocs/<domain>/frontend/dist).
       - name: Upload to VPS
