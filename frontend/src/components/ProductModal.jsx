@@ -85,7 +85,7 @@ export default function ProductModal({ product, onClose }) {
 
         <div className="detail-info">
           <button className="close-btn" onClick={onClose}>✕</button>
-          <div className="card-cat">{[product.brand, product.category_name].filter(Boolean).join(' · ')}</div>
+          <div className="card-cat">{[product.brand, product.category?.name].filter(Boolean).join(' · ')}</div>
           <h3>{product.name}</h3>
 
           <div className="rate">
@@ -95,10 +95,12 @@ export default function ProductModal({ product, onClose }) {
             <span>({product.review_count} reviews)</span>
           </div>
 
-          <div className="detail-price">
-            {product.was_price && <s>{fmtPrice(product.was_price)}</s>}
-            {fmtPrice(product.price)}
-          </div>
+          {Number(product.price) > 0 && (
+            <div className="detail-price">
+              {product.was_price && <s>{fmtPrice(product.was_price)}</s>}
+              {fmtPrice(product.price)}
+            </div>
+          )}
 
           <p className="detail-desc">{product.description}</p>
 

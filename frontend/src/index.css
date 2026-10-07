@@ -257,13 +257,13 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .stars { color: var(--ink); font-size: 13px; letter-spacing: 1px; }
 
 /* ── Category tiles ───────────────────────────────────── */
-.tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 180px)); gap: 12px; }
 .tile { background: none; border: none; text-align: left; color: var(--ink); padding: 0; }
 .tile-img { aspect-ratio: 1; overflow: hidden; background: var(--soft); display: grid; place-items: center; }
 .tile-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
-.tile-img .glyph { font-size: 64px; }
+.tile-img .glyph { font-size: 44px; }
 .tile:hover .tile-img img { transform: scale(1.04); }
-.tile-name { display: block; padding: 14px 4px 0; font-size: 17px; }
+.tile-name { display: block; padding: 10px 4px 0; font-size: 15px; }
 .tile:hover .tile-name { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ── Why choose us ────────────────────────────────────── */
@@ -283,12 +283,21 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .story-cta h2 { font-size: clamp(22px, 2.4vw, 28px); margin-bottom: 24px; }
 
 /* ── Stores ───────────────────────────────────────────── */
-.store-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.store { border-top: 2px solid var(--brand-red); padding-top: 18px; }
-.store h3 { font-size: 18px; }
-.store .addr { font-size: 15px; margin: 6px 0 8px; }
-.store .hours { font-size: 14px; color: var(--muted); }
-.store .maplink { display: inline-block; margin-top: 10px; font-size: 14px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+.store-grid.single { grid-template-columns: min(100%, 560px); }
+.store {
+  position: relative; background: var(--soft); border: 1px solid var(--line);
+  border-top: 3px solid var(--brand-red); padding: 28px 28px 26px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: box-shadow .2s, transform .2s;
+}
+.store:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.store-badge { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--brand-red); font-weight: 600; }
+.store h3 { font-size: 22px; line-height: 1.25; }
+.store-info { list-style: none; display: grid; gap: 12px; }
+.store-info li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; color: var(--text); }
+.store-info svg { width: 20px; height: 20px; flex: none; margin-top: 2px; fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.store .store-cta { align-self: flex-start; margin-top: 6px; }
 
 /* ── Marketplaces ─────────────────────────────────────── */
 .market { padding-bottom: 72px; }
@@ -499,8 +508,8 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .grid { grid-template-columns: repeat(2, 1fr); gap: 24px 8px; }
   .card-name { font-size: 14px; }
   .price { font-size: 14px; }
-  .tile-grid { grid-template-columns: repeat(2, 1fr); }
-  .tile-name { font-size: 15px; }
+  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 150px)); gap: 10px; }
+  .tile-name { font-size: 14px; }
   .why { margin-top: 44px; padding: 44px 0; }
   .why-grid { grid-template-columns: 1fr; gap: 32px; }
   .store-grid, .mk-grid { grid-template-columns: 1fr; }

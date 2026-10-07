@@ -114,7 +114,7 @@ export default function HomePage() {
 
   const activeSlugs = activeCat === 'all' ? null : slugsUnder(activeCat);
   const shown = products.filter(p =>
-    (!activeSlugs || activeSlugs.has(p.category_slug)) &&
+    (!activeSlugs || activeSlugs.has(p.category?.slug)) &&
     (!activeBrand || (p.brand || '') === activeBrand)
   );
 
@@ -124,12 +124,13 @@ export default function HomePage() {
     return (tagged.length ? tagged : products).slice(0, 4);
   }, [products]);
 
-  // One tile per category that has at least one product (its own or a
-  // subcategory's), using that product's first photo.
+  // One tile per subcategory (e.g. Wallet, not Men) that has at least one
+  // product, using that product's first photo.
   const tiles = useMemo(() => categories
+    .filter(c => c.parent_id != null)
     .map(c => {
       const slugs = slugsUnder(c.slug);
-      return { ...c, product: products.find(p => slugs.has(p.category_slug)) };
+      return { ...c, product: products.find(p => slugs.has(p.category?.slug)) };
     })
     .filter(c => c.product), [categories, products, slugsUnder]);
 
@@ -264,16 +265,27 @@ export default function HomePage() {
       {stores.length > 0 && (
         <section className="section wrap" id="stores">
           <SectionHead title="Visit Our Store" sub="Come see us in person and feel the quality of every stitch." />
-          <div className="store-grid">
+          <div className={`store-grid${stores.length === 1 ? ' single' : ''}`}>
             {stores.map(s => (
-              <div key={s.id} className="store">
+              <article key={s.id} className="store">
+                <span className="store-badge">Peacock Store</span>
                 <h3>{s.name}</h3>
-                <p className="addr">{s.address}</p>
-                {s.hours && <div className="hours">{s.hours}</div>}
+                <ul className="store-info">
+                  <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <span>{s.address}</span>
+                  </li>
+                  {s.hours && (
+                    <li>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                      <span>Open daily · {s.hours}</span>
+                    </li>
+                  )}
+                </ul>
                 {s.map_url && (
-                  <a href={s.map_url} className="maplink" target="_blank" rel="noreferrer">View on Maps</a>
+                  <a href={s.map_url} className="btn store-cta" target="_blank" rel="noreferrer">Get Directions →</a>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         </section>

@@ -23,10 +23,12 @@ export default function ProductCard({ product, onClick }) {
       </div>
       <div className="card-body">
         <div className="card-name">{product.name}</div>
-        <div className="price">
-          {product.was_price && <s>{fmtPrice(product.was_price)}</s>}
-          {fmtPrice(product.price)}
-        </div>
+        {Number(product.price) > 0 && (
+          <div className="price">
+            {product.was_price && <s>{fmtPrice(product.was_price)}</s>}
+            {fmtPrice(product.price)}
+          </div>
+        )}
       </div>
     </div>
   );
