@@ -17,7 +17,7 @@ export default function NotFoundPage() {
         </div>
       </section>
 
-      <section className="section wrap" style={{ textAlign: 'center' }}>
+      <section className="section wrap" style={{ textAlign: 'center', paddingBottom: 64 }}>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link to="/" className="btn">Back to Home</Link>
           <Link to="/branches" className="btn">Find a Branch</Link>

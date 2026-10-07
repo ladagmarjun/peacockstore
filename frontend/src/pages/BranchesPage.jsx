@@ -56,7 +56,7 @@ export default function BranchesPage() {
             <div className="branch-filters">
               <input
                 type="search" value={query} onChange={e => setQuery(e.target.value)}
-                placeholder="Find a branch near you — enter your city or barangay" aria-label="Search branches"
+                placeholder="Find a branch near you" aria-label="Search branches"
               />
               <select value={region} onChange={e => { setRegion(e.target.value); setCity(''); }} aria-label="Region">
                 <option value="">All regions</option>

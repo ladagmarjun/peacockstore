@@ -298,7 +298,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   font: inherit; font-size: 15px; background: #fff; color: var(--text);
 }
 .branch-filters input { flex: 1 1 260px; }
-.branch-filters select { flex: 0 1 200px; }
+.branch-filters select { flex: 1 1 140px; min-width: 0; }
 .branch-clear { background: none; border: 0; color: var(--brand-red); font: inherit; font-weight: 600; cursor: pointer; padding: 0 8px; }
 .store-grid.single { grid-template-columns: min(100%, 560px); }
 .store {
@@ -415,6 +415,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 
 /* ── Auth pages ───────────────────────────────────────── */
 .auth-wrap { max-width: 460px; padding: 72px 32px; }
+.wrap.auth-wrap { padding-top: 72px; padding-bottom: 72px; }
 .auth-wrap h2 { font-size: 36px; margin-bottom: 6px; text-align: center; }
 .auth-sub { text-align: center; margin-bottom: 30px; }
 .auth-form { display: flex; flex-direction: column; gap: 16px; }
