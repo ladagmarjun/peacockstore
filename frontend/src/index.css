@@ -551,3 +551,19 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .lhero-photo { position: relative; background-size: cover; background-position: center; }
 .lhero-photo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(10,42,64,.55), rgba(10,42,64,.7)); }
 .lhero-photo .lhero-inner { position: relative; }
+
+/* ── Messenger chat button ────────────────────────────── */
+.messenger-fab {
+  position: fixed; right: 20px; bottom: 20px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 18px 12px 14px; border-radius: 999px;
+  background: #0084ff; color: #fff; font-size: 14px; font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 132, 255, .35);
+  transition: transform .15s, box-shadow .15s;
+}
+.messenger-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0, 132, 255, .45); }
+.messenger-fab svg { width: 24px; height: 24px; fill: #fff; flex: none; }
+@media (max-width: 600px) {
+  .messenger-fab { right: 14px; bottom: 14px; padding: 14px; }
+  .messenger-fab span { display: none; }
+}

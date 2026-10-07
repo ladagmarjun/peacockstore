@@ -7,6 +7,7 @@ import OurStoryPage          from './pages/OurStoryPage';
 import CategoryPage          from './pages/CategoryPage';
 import BranchesPage          from './pages/BranchesPage';
 import NotFoundPage          from './pages/NotFoundPage';
+import MessengerButton       from './components/MessengerButton';
 
 import DashboardPage    from './pages/admin/DashboardPage';
 import ProductsPage     from './pages/admin/ProductsPage';
@@ -61,6 +62,7 @@ export default function App() {
           {/* Fallback */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <MessengerButton />
     </AuthProvider>
   );
 }
