@@ -213,14 +213,22 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .section-head p { margin-top: 6px; color: var(--text); max-width: 620px; }
 .section-cta { display: flex; justify-content: center; margin-top: 36px; }
 
-.filters { display: flex; gap: 22px; flex-wrap: wrap; }
-.chip {
-  background: none; border: none; padding: 4px 0; font-size: 13px;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
-  border-bottom: 1px solid transparent;
+/* One scrollable row of pills, so many categories never wrap or push the layout */
+.filters {
+  display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto;
+  margin-bottom: 28px; padding-bottom: 6px;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent 100%);
 }
-.chip:hover { color: var(--ink); }
-.chip.active { color: var(--ink); border-bottom-color: var(--brand-red); }
+.filters::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; white-space: nowrap; cursor: pointer;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 999px;
+  padding: 8px 18px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); transition: color .15s, border-color .15s, background .15s;
+}
+.chip:hover { color: var(--ink); border-color: var(--ink); }
+.chip.active { color: #fff; background: var(--ink); border-color: var(--ink); }
 
 .brand-filter {
   display: inline-flex; align-items: center; gap: 10px; margin-bottom: 24px;

@@ -214,19 +214,24 @@ export default function HomePage() {
 
       {/* Shop all */}
       <section className="section wrap" id="shop" ref={shopRef}>
-        <SectionHead title="Shop All" sub={`${shown.length} product${shown.length === 1 ? '' : 's'}`}>
-          <div className="filters">
-            {[{ slug: 'all', name: 'All' }, ...categories].map(c => (
-              <button
-                key={c.slug}
-                className={`chip${activeCat === c.slug ? ' active' : ''}`}
-                onClick={() => setCategory(c.slug)}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
-        </SectionHead>
+        <SectionHead title="Shop All" sub={`${shown.length} product${shown.length === 1 ? '' : 's'}`} />
+
+        <div className="filters" role="tablist" aria-label="Filter by category">
+          {[{ slug: 'all', name: 'All' }, ...categories].map(c => (
+            <button
+              key={c.slug}
+              role="tab"
+              aria-selected={activeCat === c.slug}
+              className={`chip${activeCat === c.slug ? ' active' : ''}`}
+              onClick={(e) => {
+                setCategory(c.slug);
+                e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+              }}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
 
         {activeBrand && (
           <div className="brand-filter">

@@ -6,6 +6,7 @@ import LoginPage             from './pages/LoginPage';
 import OurStoryPage          from './pages/OurStoryPage';
 import CategoryPage          from './pages/CategoryPage';
 import BranchesPage          from './pages/BranchesPage';
+import NotFoundPage          from './pages/NotFoundPage';
 
 import DashboardPage    from './pages/admin/DashboardPage';
 import ProductsPage     from './pages/admin/ProductsPage';
@@ -56,6 +57,9 @@ export default function App() {
           <Route path="/admin/orders"            element={<AdminRoute><OrdersPage /></AdminRoute>} />
           <Route path="/admin/orders/:id"        element={<AdminRoute><OrderDetailPage /></AdminRoute>} />
           <Route path="/admin/users"             element={<AdminRoute><UsersPage /></AdminRoute>} />
+
+          {/* Fallback */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
     </AuthProvider>
   );
