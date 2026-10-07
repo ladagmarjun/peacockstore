@@ -33,7 +33,7 @@ export default function OurStoryPage() {
             its leather and the care in its making.
           </p>
           <p>
-            Today you can find Peacock in our store and on Shopee, Lazada and TikTok Shop. Wherever
+            Today you can find Peacock at our branch and on Shopee, Lazada and TikTok Shop. Wherever
             you shop, it's the same genuine leather and the same attention to detail.
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function OurStoryPage() {
         <h2>Find your next everyday piece</h2>
         <div className="lhero-cta">
           <a href="/#shop" className="btn">Shop All</a>
-          <a href="/#stores" className="btn-line">Visit Our Store</a>
+          <a href="/#branches" className="btn-line">Visit Our Branches</a>
         </div>
       </section>
 

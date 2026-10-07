@@ -4,6 +4,7 @@ import Navbar       from '../components/Navbar';
 import Footer       from '../components/Footer';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
+import StoreCard    from '../components/StoreCard';
 import HeroSlider   from '../components/HeroSlider';
 import MarketplaceIcon from '../components/MarketplaceIcon';
 import { api, assetUrl } from '../services/api';
@@ -22,7 +23,7 @@ const WHY = [
   },
   {
     title: 'Shop Your Way',
-    text: 'Order here, visit our store, or find us on Shopee, Lazada and TikTok Shop.',
+    text: 'Order here, visit a branch, or find us on Shopee, Lazada and TikTok Shop.',
     icon: <><path d="M5 8h14l-1 13H6L5 8z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></>,
   },
 ];
@@ -156,7 +157,7 @@ export default function HomePage() {
             <p>Genuine leather bags, backpacks, slings and belts — made to be carried for years.</p>
             <div className="lhero-cta">
               <a className="btn-outline-light" href="#shop">Shop All</a>
-              <a className="btn-outline-light" href="#stores">Visit Our Store</a>
+              <a className="btn-outline-light" href="#branches">Visit Our Branches</a>
             </div>
           </div>
         </section>
@@ -261,32 +262,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Physical stores */}
+      {/* Physical branches */}
       {stores.length > 0 && (
-        <section className="section wrap" id="stores">
-          <SectionHead title="Visit Our Store" sub="Come see us in person and feel the quality of every stitch." />
+        <section className="section wrap" id="branches">
+          <SectionHead title="Visit Our Branches" sub="Come see us in person and feel the quality of every stitch." />
           <div className={`store-grid${stores.length === 1 ? ' single' : ''}`}>
-            {stores.map(s => (
-              <article key={s.id} className="store">
-                <span className="store-badge">Peacock Store</span>
-                <h3>{s.name}</h3>
-                <ul className="store-info">
-                  <li>
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-                    <span>{s.address}</span>
-                  </li>
-                  {s.hours && (
-                    <li>
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                      <span>Open daily · {s.hours}</span>
-                    </li>
-                  )}
-                </ul>
-                {s.map_url && (
-                  <a href={s.map_url} className="btn store-cta" target="_blank" rel="noreferrer">Get Directions →</a>
-                )}
-              </article>
-            ))}
+            {stores.map(s => <StoreCard key={s.id} store={s} />)}
           </div>
         </section>
       )}

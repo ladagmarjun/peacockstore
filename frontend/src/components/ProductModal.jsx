@@ -47,9 +47,9 @@ export default function ProductModal({ product, onClose }) {
     : colors;
   const go = (idx) => setActiveIdx((idx + n) % n);
 
-  // No marketplace links: send shoppers to the store list on the home page.
+  // No marketplace links: send shoppers to the branch list on the home page.
   const visitStore = (e) => {
-    const stores = document.getElementById('stores');
+    const stores = document.getElementById('branches');
     if (!stores) return; // not on the home page — let the link navigate there
     e.preventDefault();
     onClose();
@@ -146,10 +146,10 @@ export default function ProductModal({ product, onClose }) {
             </>
           ) : (
             <>
-              <div className="buy-label">Available in store</div>
+              <div className="buy-label">Available in branch</div>
               <div className="buy-links">
-                <a href="/#stores" className="buy buy-store" onClick={visitStore}>
-                  <span>Visit our store</span><span>→</span>
+                <a href="/#branches" className="buy buy-store" onClick={visitStore}>
+                  <span>Visit our branch</span><span>→</span>
                 </a>
               </div>
             </>

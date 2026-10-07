@@ -3,7 +3,7 @@ import AdminLayout from '../../components/AdminLayout';
 import { api } from '../../services/api';
 
 const EMPTY = {
-  id: null, name: '', address: '', hours: '', map_url: '', sort_order: 0, is_active: true,
+  id: null, name: '', address: '', barangay: '', city: '', region: '', hours: '', map_url: '', sort_order: 0, is_active: true,
 };
 
 export default function StoresPage() {
@@ -30,6 +30,7 @@ export default function StoresPage() {
     setMsg(''); setError('');
     setForm({
       id: s.id, name: s.name, address: s.address,
+      barangay: s.barangay || '', city: s.city || '', region: s.region || '',
       hours: s.hours || '', map_url: s.map_url || '',
       sort_order: s.sort_order, is_active: s.is_active,
     });
@@ -88,7 +89,22 @@ export default function StoresPage() {
 
           <div className="form-group">
             <label>Address *</label>
-            <input name="address" required value={form.address} onChange={change} placeholder="Floor, mall / street, city" />
+            <input name="address" required value={form.address} onChange={change} placeholder="Floor, mall / street" />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Barangay</label>
+              <input name="barangay" value={form.barangay} onChange={change} />
+            </div>
+            <div className="form-group">
+              <label>City</label>
+              <input name="city" value={form.city} onChange={change} />
+            </div>
+            <div className="form-group">
+              <label>Region</label>
+              <input name="region" value={form.region} onChange={change} />
+            </div>
           </div>
 
           <div className="form-row">
@@ -133,7 +149,7 @@ export default function StoresPage() {
               <tr key={s.id}>
                 <td>{s.sort_order}</td>
                 <td><strong>{s.name}</strong></td>
-                <td>{s.address}</td>
+                <td>{[s.address, s.barangay, s.city, s.region].filter(Boolean).join(', ')}</td>
                 <td>{s.hours}</td>
                 <td>{s.is_active ? '✅' : '❌'}</td>
                 <td>

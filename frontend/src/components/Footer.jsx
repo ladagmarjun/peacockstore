@@ -37,7 +37,7 @@ export default function Footer() {
               <li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
               <li><a href={CONTACT.facebook} target="_blank" rel="noreferrer">Facebook</a></li>
               <li><Link to="/our-story">Our Story</Link></li>
-              <li><a href="/#stores">Visit our store</a></li>
+              <li><Link to="/branches">Our branches</Link></li>
             </ul>
           </div>
         </div>

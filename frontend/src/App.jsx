@@ -5,6 +5,7 @@ import HomePage              from './pages/HomePage';
 import LoginPage             from './pages/LoginPage';
 import OurStoryPage          from './pages/OurStoryPage';
 import CategoryPage          from './pages/CategoryPage';
+import BranchesPage          from './pages/BranchesPage';
 
 import DashboardPage    from './pages/admin/DashboardPage';
 import ProductsPage     from './pages/admin/ProductsPage';
@@ -38,6 +39,8 @@ export default function App() {
           {/* Public */}
           <Route path="/"            element={<HomePage />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/branches"    element={<BranchesPage />} />
+          <Route path="/stores"      element={<Navigate to="/branches" replace />} />
           <Route path="/our-story"   element={<OurStoryPage />} />
           <Route path="/login"       element={<AuthRoute><LoginPage /></AuthRoute>} />
 

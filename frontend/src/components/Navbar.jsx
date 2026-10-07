@@ -6,7 +6,7 @@ import { api } from '../services/api';
 const ANNOUNCEMENTS = [
   'Genuine leather goods, handcrafted to last',
   'Ships nationwide — also on Shopee, Lazada & TikTok Shop',
-  'Visit our store and feel the quality of every stitch',
+  'Visit our branch and feel the quality of every stitch',
 ];
 
 const Caret = () => (
@@ -146,7 +146,7 @@ export default function Navbar() {
             {dropdown('brand', 'Brands', brands, 'No brands yet',
               b => `/?brand=${encodeURIComponent(b.name)}`, b => b.id, b => b.name)}
             <Link to="/our-story">Our Story</Link>
-            <a href="/#stores">Stores</a>
+            <Link to="/branches">Branches</Link>
             <a href="/#contact">Contact</a>
           </nav>
 
@@ -185,7 +185,7 @@ export default function Navbar() {
             </div>
 
             <Link to="/our-story" onClick={closeMenu}>Our Story</Link>
-            <a href="/#stores" onClick={closeMenu}>Stores</a>
+            <Link to="/branches" onClick={closeMenu}>Branches</Link>
             <a href="/#contact" onClick={closeMenu}>Contact</a>
           </div>
         )}
