@@ -284,6 +284,14 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 
 /* ── Stores ───────────────────────────────────────────── */
 .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+.branch-filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+.branch-filters input, .branch-filters select {
+  padding: 12px 16px; border: 1.5px solid var(--line); border-radius: 999px;
+  font: inherit; font-size: 15px; background: #fff; color: var(--text);
+}
+.branch-filters input { flex: 1 1 260px; }
+.branch-filters select { flex: 0 1 200px; }
+.branch-clear { background: none; border: 0; color: var(--brand-red); font: inherit; font-weight: 600; cursor: pointer; padding: 0 8px; }
 .store-grid.single { grid-template-columns: min(100%, 560px); }
 .store {
   position: relative; background: var(--soft); border: 1px solid var(--line);
