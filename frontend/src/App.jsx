@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import HomePage              from './pages/HomePage';
 import LoginPage             from './pages/LoginPage';
 import OurStoryPage          from './pages/OurStoryPage';
+import CategoryPage          from './pages/CategoryPage';
 
 import DashboardPage    from './pages/admin/DashboardPage';
 import ProductsPage     from './pages/admin/ProductsPage';
@@ -36,6 +37,7 @@ export default function App() {
         <Routes>
           {/* Public */}
           <Route path="/"            element={<HomePage />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/our-story"   element={<OurStoryPage />} />
           <Route path="/login"       element={<AuthRoute><LoginPage /></AuthRoute>} />
 

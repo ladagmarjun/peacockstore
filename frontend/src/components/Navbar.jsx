@@ -81,7 +81,7 @@ export default function Navbar() {
   // go in a dropdown under them, led by an "All <parent>" link.
   const parents    = categories.filter(c => c.parent_id == null);
   const childrenOf = (p) => categories.filter(c => c.parent_id === p.id);
-  const catHref    = (c) => `/?cat=${c.slug}`;
+  const catHref    = (c) => `/category/${c.slug}`;
 
   const dropdown = (key, label, items, empty, toHref, keyOf, nameOf) => (
     <div

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Navbar       from '../components/Navbar';
 import Footer       from '../components/Footer';
 import ProductCard  from '../components/ProductCard';
@@ -199,12 +199,12 @@ export default function HomePage() {
             {tiles.map(c => {
               const img = coverOf(c.product);
               return (
-                <button key={c.slug} className="tile" onClick={() => setCategory(c.slug)}>
+                <Link key={c.slug} to={`/category/${c.slug}`} className="tile">
                   <div className="tile-img">
                     {img ? <img src={assetUrl(img)} alt="" loading="lazy" /> : <span className="glyph">{c.product.glyph}</span>}
                   </div>
                   <span className="tile-name">{c.name} <span aria-hidden="true">→</span></span>
-                </button>
+                </Link>
               );
             })}
           </div>

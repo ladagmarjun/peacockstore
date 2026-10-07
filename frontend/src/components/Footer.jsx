@@ -26,7 +26,7 @@ export default function Footer() {
             <h4>Shop</h4>
             <ul>
               {categories.map(c => (
-                <li key={c.slug}><Link to={`/?cat=${c.slug}`}>{c.name}</Link></li>
+                <li key={c.slug}><Link to={`/category/${c.slug}`}>{c.name}</Link></li>
               ))}
               <li><a href="/#shop">Shop All</a></li>
             </ul>
