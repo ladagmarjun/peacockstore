@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 
-const MESSENGER_URL = 'https://m.me/100074706814824';
+const MESSENGER_URL = 'https://m.me/100088682791417';
 
 export default function MessengerButton() {
   const { pathname } = useLocation();
