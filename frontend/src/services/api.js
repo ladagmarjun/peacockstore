@@ -21,6 +21,19 @@ async function request(path, options = {}) {
   return data;
 }
 
+// Public catalog data (categories) is served by the store admin API. It answers
+// with `Access-Control-Allow-Origin: *`, so requests must go without cookies,
+// and wraps lists in a `{ data: [...] }` envelope.
+const CATALOG_URL = (import.meta.env.VITE_CATALOG_API_URL || 'https://storeadmin.peacockgenuineleather.com')
+  .replace(/\/$/, '') + '/api';
+
+async function catalogRequest(path) {
+  const res = await fetch(CATALOG_URL + path, { headers: { Accept: 'application/json' } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
+  return Array.isArray(data) ? data : data.data;
+}
+
 async function uploadFile(path, file) {
   const body = new FormData();
   body.append('image', file);
@@ -37,7 +50,7 @@ export const api = {
   logout:   ()       => request('/auth/logout',   { method: 'POST' }),
 
   // Shop
-  getCategories: ()       => request('/categories'),
+  getCategories: ()       => catalogRequest('/categories'),
   getBrands:     ()       => request('/brands'),
   getStores:     ()       => request('/stores'),
   getBanners:    ()       => request('/banners'),
