@@ -1,14 +1,15 @@
 import { assetUrl } from '../services/api';
+import { productPhotos } from '../utils/productPhotos';
 
 function fmtPrice(n) {
   return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 }
 
 export default function ProductCard({ product, onClick }) {
-  const images = Array.isArray(product.images) ? product.images : JSON.parse(product.images || '[]');
-  const cover  = images[0]?.url || product.image_url;
+  const photos = productPhotos(product);
+  const cover  = photos[0]?.url;
   // A second photo, when present, is revealed on hover.
-  const hover  = images[1]?.url;
+  const hover  = photos[1]?.url;
   return (
     <div className="card" onClick={() => onClick(product)}>
       <div className="card-img">

@@ -9,6 +9,7 @@ import HeroSlider   from '../components/HeroSlider';
 import MarketplaceIcon from '../components/MarketplaceIcon';
 import { api, assetUrl } from '../services/api';
 import { MARKETPLACES } from '../constants';
+import { coverOf } from '../utils/productPhotos';
 
 const WHY = [
   {
@@ -37,10 +38,6 @@ const MID_BANNER = {
   cta:      { label: 'Shop All', href: '#shop' },
 };
 
-function coverOf(p) {
-  const images = Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]');
-  return images[0]?.url || p.image_url;
-}
 
 function SectionHead({ title, sub, children }) {
   return (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import MarketplaceIcon from './MarketplaceIcon';
 import { assetUrl } from '../services/api';
+import { productPhotos } from '../utils/productPhotos';
 
 function fmtPrice(n) {
   return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2 });
@@ -22,9 +23,7 @@ export default function ProductModal({ product, onClose }) {
     ? product.colors
     : JSON.parse(product.colors || '[]');
 
-  const images = Array.isArray(product.images)
-    ? product.images
-    : JSON.parse(product.images || '[]');
+  const images = productPhotos(product);
 
   const links = product.links && typeof product.links === 'object'
     ? product.links

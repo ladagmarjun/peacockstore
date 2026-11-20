@@ -5,11 +5,7 @@ import Footer       from '../components/Footer';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import { api, assetUrl } from '../services/api';
-
-function coverOf(p) {
-  const images = Array.isArray(p.images) ? p.images : JSON.parse(p.images || '[]');
-  return images[0]?.url || p.image_url;
-}
+import { coverOf } from '../utils/productPhotos';
 
 export default function CategoryPage() {
   const { slug } = useParams();
