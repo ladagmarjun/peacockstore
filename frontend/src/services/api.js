@@ -10,6 +10,8 @@ export function assetUrl(url) {
 }
 
 async function request(path, options = {}) {
+  // Any admin write may change what the shop shows, so drop cached catalog data.
+  if (options.method && options.method !== 'GET') catalogCache.clear();
   const res = await fetch(BASE + path, {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...options.headers },
@@ -23,11 +25,34 @@ async function request(path, options = {}) {
 
 // Public shop data answers with `Access-Control-Allow-Origin: *`, so requests
 // must go without cookies, and wraps results in a `{ data: ... }` envelope.
-async function catalogRequest(path) {
+async function fetchCatalog(path) {
   const res = await fetch(BASE + path, { headers: { Accept: 'application/json' } });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
   return data && !Array.isArray(data) && 'data' in data ? data.data : data;
+}
+
+// In-memory cache for public shop data, keyed by path. Stores the promise so
+// concurrent callers share one request; failed requests are evicted so they
+// can be retried.
+const CATALOG_TTL = 5 * 60 * 1000;
+const catalogCache = new Map();
+
+function catalogRequest(path) {
+  const hit = catalogCache.get(path);
+  if (hit && Date.now() - hit.time < CATALOG_TTL) return hit.promise;
+
+  const promise = fetchCatalog(path);
+  const entry = { promise, time: Date.now() };
+  catalogCache.set(path, entry);
+  promise.catch(() => {
+    if (catalogCache.get(path) === entry) catalogCache.delete(path);
+  });
+  return promise;
+}
+
+export function clearCatalogCache() {
+  catalogCache.clear();
 }
 
 async function uploadFile(path, file) {

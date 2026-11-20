@@ -7,8 +7,15 @@ const REC_W = 1600;
 const REC_H = 600;
 
 const EMPTY = {
-  id: null, image_url: '', headline: '', subtext: '', link_url: '', sort_order: 0, is_active: true,
+  id: null, placement: 'hero', image_url: '', label: '', headline: '', subtext: '', align: 'center',
+  link_url: '', sort_order: 0, is_active: true,
 };
+
+const PLACEMENTS = [
+  { value: 'hero',   label: 'Homepage slideshow (top)' },
+  { value: 'middle', label: 'Mid-page banner' },
+];
+const ALIGNS = ['left', 'center', 'right'];
 
 function readDimensions(file) {
   return new Promise((resolve) => {
@@ -43,8 +50,9 @@ export default function BannersPage() {
   const edit = (b) => {
     setMsg(''); setError(''); setDims(null);
     setForm({
-      id: b.id, image_url: b.image_url, headline: b.headline || '',
-      subtext: b.subtext || '', link_url: b.link_url || '',
+      id: b.id, placement: b.placement || 'hero', image_url: b.image_url,
+      label: b.label || '', headline: b.headline || '', subtext: b.subtext || '',
+      align: b.align || 'center', link_url: b.link_url || '',
       sort_order: b.sort_order, is_active: b.is_active,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -112,6 +120,13 @@ export default function BannersPage() {
         <h3 style={{ marginTop: 0 }}>{isEdit ? 'Edit Slide' : 'Add Slide'}</h3>
         <form onSubmit={submit} className="admin-form">
           <div className="form-group">
+            <label>Placement *</label>
+            <select name="placement" value={form.placement} onChange={change}>
+              {PLACEMENTS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Cover Image *</label>
             <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--muted)' }}>
               Required size: <b>{REC_W} × {REC_H}px</b> (landscape, JPG/PNG/WEBP, max 5&nbsp;MB). Wider images are cropped to fit.
@@ -134,10 +149,18 @@ export default function BannersPage() {
             )}
           </div>
 
+          <div className="form-group">
+            <label>Label (optional)</label>
+            <input name="label" value={form.label} onChange={change} placeholder="e.g. Backpacks" />
+            <p style={{ margin: '6px 0 0', fontSize: 12, color: 'var(--muted)' }}>
+              Small text shown above the headline.
+            </p>
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label>Headline (optional)</label>
-              <input name="headline" value={form.headline} onChange={change} placeholder="e.g. New Season Arrivals" />
+              <input name="headline" value={form.headline} onChange={change} placeholder="e.g. Ready for the commute." />
             </div>
             <div className="form-group">
               <label>Sort Order</label>
@@ -148,6 +171,13 @@ export default function BannersPage() {
           <div className="form-group">
             <label>Subtext (optional)</label>
             <input name="subtext" value={form.subtext} onChange={change} placeholder="A short line under the headline" />
+          </div>
+
+          <div className="form-group">
+            <label>Text alignment</label>
+            <select name="align" value={form.align} onChange={change}>
+              {ALIGNS.map(a => <option key={a} value={a}>{a[0].toUpperCase() + a.slice(1)}</option>)}
+            </select>
           </div>
 
           <div className="form-group">
@@ -177,16 +207,20 @@ export default function BannersPage() {
       <div className="admin-section">
         <table className="admin-table">
           <thead>
-            <tr><th>Sort</th><th>Preview</th><th>Headline</th><th>Active</th><th>Actions</th></tr>
+            <tr><th>Sort</th><th>Preview</th><th>Placement</th><th>Label / Headline</th><th>Active</th><th>Actions</th></tr>
           </thead>
           <tbody>
             {banners.length === 0 ? (
-              <tr><td colSpan={5} className="empty">No slides yet.</td></tr>
+              <tr><td colSpan={6} className="empty">No slides yet.</td></tr>
             ) : banners.map(b => (
               <tr key={b.id}>
                 <td>{b.sort_order}</td>
                 <td><img src={assetUrl(b.image_url)} alt="" style={{ width: 120, height: 45, objectFit: 'cover', borderRadius: 6 }} /></td>
-                <td>{b.headline || <span style={{ color: 'var(--muted)' }}>—</span>}</td>
+                <td>{b.placement === 'middle' ? 'Mid-page' : 'Slideshow'}</td>
+                <td>
+                  {b.label && <div style={{ fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{b.label}</div>}
+                  {b.headline || (!b.label && <span style={{ color: 'var(--muted)' }}>—</span>)}
+                </td>
                 <td>{b.is_active ? '✅' : '❌'}</td>
                 <td>
                   <button className="tbl-link" onClick={() => edit(b)}>Edit</button>

@@ -158,10 +158,37 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .hero-overlay {
   position: absolute; inset: 0; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 0 24px; color: #fff; background: rgba(0,0,0,.22);
+  text-align: center; padding: 0 24px; color: #fff;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.38) 0%, rgba(0,0,0,.12) 60%, rgba(0,0,0,0) 100%);
+  text-shadow: 0 2px 18px rgba(0,0,0,.25);
 }
-.hero-overlay h2 { color: #fff; font-size: clamp(30px, 4vw, 48px); max-width: 760px; }
-.hero-overlay p { margin: 12px 0 28px; font-size: clamp(15px, 1.4vw, 18px); color: rgba(255,255,255,.9); max-width: 560px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 16px;
+  font-size: clamp(12px, 1.1vw, 16px); font-weight: 600;
+  letter-spacing: .32em; text-transform: uppercase; color: rgba(255,255,255,.92);
+  margin-bottom: clamp(14px, 2vw, 28px);
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ""; width: clamp(22px, 2.4vw, 38px); height: 1.5px; background: currentColor;
+}
+.hero-eyebrow::after { margin-left: -.32em; } /* offset trailing letter-spacing */
+/* Overlay ignores clicks; only the CTA button is clickable */
+.hero-overlay .hero-cta { pointer-events: auto; }
+.hero-overlay h2 {
+  color: #fff; font-size: clamp(36px, 5.6vw, 84px); font-weight: 700;
+  line-height: 1.08; letter-spacing: -.01em; max-width: 640px; margin: 0;
+}
+.hero-overlay p {
+  margin: clamp(14px, 2vw, 26px) 0 28px; font-size: clamp(15px, 1.5vw, 22px);
+  line-height: 1.55; color: rgba(255,255,255,.92); max-width: 540px;
+}
+/* Text alignment chosen per banner in the admin (left / center / right) */
+.hero-overlay.align-left,
+.mid-banner-inner.align-left  { align-items: flex-start; text-align: left;  padding-left: clamp(24px, 8vw, 140px); }
+.hero-overlay.align-right,
+.mid-banner-inner.align-right { align-items: flex-end;   text-align: right; padding-right: clamp(24px, 8vw, 140px); }
+.hero-overlay.align-left  { background: linear-gradient(90deg,  rgba(0,0,0,.42), rgba(0,0,0,0) 65%); }
+.hero-overlay.align-right { background: linear-gradient(270deg, rgba(0,0,0,.42), rgba(0,0,0,0) 65%); }
 .hero-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
   width: 44px; height: 44px; border: none; cursor: pointer;
@@ -516,6 +543,43 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .stat-grid { grid-template-columns: repeat(2,1fr); }
   .admin-sidebar { width: 180px; }
 }
+
+/* Small laptops: the banner crops the image's sides, so keep the centred
+   text narrow enough to stay inside the image's blue middle. */
+@media (min-width: 991px) and (max-width: 1279px) {
+  .hero-overlay.align-center h2 { font-size: 4.4vw; max-width: 36vw; }
+  .hero-overlay.align-center p  { max-width: 36vw; }
+}
+
+/* Phones and tablets: show the whole wide banner image (same 1920×720 shape
+   as the upload) and move the text into a light panel underneath it. */
+@media (max-width: 990px) {
+  .hero-slide { height: auto; display: flex; flex-direction: column; background: var(--soft); }
+  .hero-slide > img { height: auto; aspect-ratio: 1920 / 720; }
+  .hero-overlay,
+  .hero-overlay.align-left,
+  .hero-overlay.align-right {
+    position: static; flex: 1; justify-content: flex-start; align-items: center; text-align: center;
+    padding: clamp(22px, 3.5vw, 32px) 20px 46px; background: var(--soft); color: var(--ink); text-shadow: none;
+  }
+  /* The label (e.g. "Long Wallets") sits in the blue middle third of the
+     banner image; headline, text and button stay in the panel below. */
+  .hero-eyebrow {
+    position: absolute; top: 0; left: 33.333%; width: 33.333%; aspect-ratio: 640 / 720;
+    justify-content: center; text-align: center; margin: 0; padding: 0 6px;
+    font-size: clamp(12px, 1.6vw, 15px); letter-spacing: .2em; line-height: 1.5; color: #fff;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after { display: none; }
+  .hero-overlay h2 { font-size: clamp(26px, 4vw, 36px); color: var(--ink); }
+  .hero-overlay p { margin: 10px 0 18px; font-size: clamp(14px, 1.9vw, 16px); color: var(--muted); }
+  .hero-overlay .hero-cta { min-height: 40px; padding: 0 22px; font-size: 14px; color: var(--ink); border-color: var(--ink); }
+  .hero-overlay .hero-cta:hover { box-shadow: 0 0 0 1px var(--ink); }
+  .hero-dots { bottom: 16px; }
+  .hero-dots button { border-color: var(--ink); }
+  .hero-dots button.active { background: var(--ink); }
+  .hero-arrow { display: none; }
+}
+
 @media (max-width: 750px) {
   .wrap { padding: 0 16px; }
   .mobile-menu { padding: 8px 16px 20px; }
@@ -530,7 +594,6 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .why { margin-top: 44px; padding: 44px 0; }
   .why-grid { grid-template-columns: 1fr; gap: 32px; }
   .store-grid, .mk-grid { grid-template-columns: 1fr; }
-  .hero-slide { height: clamp(320px, 90vw, 440px); }
   .hero-arrow { display: none; }
   .mid-banner { margin-top: 44px; }
   .mid-banner-inner { padding: 44px 16px; }

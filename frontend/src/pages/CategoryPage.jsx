@@ -32,7 +32,7 @@ export default function CategoryPage() {
   // The category's own slug plus every descendant's, so a parent (e.g. Men)
   // also lists products filed under its children (e.g. Wallet).
   const shown = (() => {
-    if (!category) return [];
+    if (!category || !products) return []; // products may still be loading
     const slugs = new Set([category.slug]);
     for (let grew = true; grew;) {
       grew = false;

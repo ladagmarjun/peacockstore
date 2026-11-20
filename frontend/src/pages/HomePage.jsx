@@ -137,6 +137,8 @@ export default function HomePage() {
 
   const mid = midBanner ? {
     image:    assetUrl(midBanner.image_url),
+    eyebrow:  midBanner.label,
+    align:    midBanner.align,
     headline: midBanner.headline,
     text:     midBanner.subtext,
     cta:      midBanner.link_url && { label: 'Shop Now', href: midBanner.link_url },
@@ -184,7 +186,7 @@ export default function HomePage() {
         className={`mid-banner${mid.image ? ' has-image' : ''}${midHasText ? ' has-text' : ''}`}
         style={mid.image ? { backgroundImage: `url(${mid.image})` } : undefined}
       >
-        <div className="mid-banner-inner">
+        <div className={`mid-banner-inner align-${mid.align || 'center'}`}>
           {mid.eyebrow && <span className="mid-banner-eyebrow">{mid.eyebrow}</span>}
           {mid.headline && <h2>{mid.headline}</h2>}
           {mid.text && <p>{mid.text}</p>}

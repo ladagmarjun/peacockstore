@@ -18,19 +18,19 @@ export default function HeroSlider({ banners }) {
     <section className="hero-slider">
       <div className="hero-track" style={{ transform: `translateX(-${i * 100}%)` }}>
         {banners.map((b) => {
-          const Tag = b.link_url ? 'a' : 'div';
-          const tagProps = b.link_url ? { href: b.link_url } : {};
+          const { label, headline } = b;
           return (
-            <Tag className="hero-slide" key={b.id} {...tagProps}>
-              <img src={assetUrl(b.image_url)} alt={b.headline || 'Peacock Leather'} />
-              {(b.headline || b.subtext) && (
-                <div className="hero-overlay">
-                  {b.headline && <h2>{b.headline}</h2>}
+            <div className="hero-slide" key={b.id}>
+              <img src={assetUrl(b.image_url)} alt={headline || label || 'Peacock Leather'} />
+              {(label || headline || b.subtext || b.link_url) && (
+                <div className={`hero-overlay align-${b.align || 'center'}`}>
+                  {label && <span className="hero-eyebrow">{label}</span>}
+                  {headline && <h2>{headline}</h2>}
                   {b.subtext && <p>{b.subtext}</p>}
-                  {b.link_url && <span className="btn-outline-light">Shop Now</span>}
+                  {b.link_url && <a className="btn-outline-light hero-cta" href={b.link_url}>Shop Now</a>}
                 </div>
               )}
-            </Tag>
+            </div>
           );
         })}
       </div>
