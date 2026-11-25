@@ -266,12 +266,13 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .brand-filter button:hover { background: var(--ink); color: #fff; }
 
 /* ── Product grid / cards ─────────────────────────────── */
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 8px; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 6px; }
 .card { cursor: pointer; display: flex; flex-direction: column; }
 .card-img {
-  aspect-ratio: 4 / 5; position: relative; overflow: hidden;
-  background: var(--soft); display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 7 / 10; position: relative; overflow: hidden;
+  background: #fff; display: flex; align-items: center; justify-content: center;
 }
+.card-img:has(.glyph) { background: var(--soft); }
 .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease, opacity .4s ease; }
 .card-img .card-img-alt { position: absolute; inset: 0; opacity: 0; }
 .card:hover .card-img img { transform: scale(1.04); }
@@ -279,12 +280,12 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .card-img .glyph { font-size: 72px; }
 .tag {
   position: absolute; bottom: 12px; left: 12px;
-  background: var(--brand-red); color: #fff;
+  background: #fff; color: var(--ink); border: 1px solid var(--line);
   font-size: 12px; letter-spacing: .06em; padding: 3px 12px; border-radius: 999px;
 }
-.card-body { padding: 14px 4px 0; display: flex; flex-direction: column; gap: 4px; }
+.card-body { padding: 18px 2px 0; display: flex; flex-direction: column; gap: 6px; }
 .card-cat { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.card-name { font-size: 16px; color: var(--ink); line-height: 1.35; }
+.card-name { font-size: 14px; color: var(--ink); line-height: 1.4; letter-spacing: .04em; }
 .card:hover .card-name { text-decoration: underline; text-underline-offset: 3px; }
 .price { font-size: 15px; color: var(--ink); letter-spacing: .06em; }
 .price s { color: var(--muted); margin-right: 8px; }
