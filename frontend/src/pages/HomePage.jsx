@@ -4,7 +4,7 @@ import Navbar       from '../components/Navbar';
 import Footer       from '../components/Footer';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
-import StoreCard    from '../components/StoreCard';
+import BranchFinder from '../components/BranchFinder';
 import HeroSlider   from '../components/HeroSlider';
 import MarketplaceIcon from '../components/MarketplaceIcon';
 import { api, assetUrl } from '../services/api';
@@ -269,10 +269,7 @@ export default function HomePage() {
       {/* Physical branches */}
       {stores.length > 0 && (
         <section className="section wrap" id="branches">
-          <SectionHead title="Visit Our Branches" sub="Come see us in person and feel the quality of every stitch." />
-          <div className={`store-grid${stores.length === 1 ? ' single' : ''}`}>
-            {stores.map(s => <StoreCard key={s.id} store={s} />)}
-          </div>
+          <BranchFinder stores={stores} limit={6} />
         </section>
       )}
 
