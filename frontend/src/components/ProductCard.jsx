@@ -1,15 +1,14 @@
 import { assetUrl } from '../services/api';
-import { productPhotos } from '../utils/productPhotos';
+import { coverOf, hoverOf } from '../utils/productPhotos';
 
 function fmtPrice(n) {
   return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 }
 
 export default function ProductCard({ product, onClick }) {
-  const photos = productPhotos(product);
-  const cover  = photos[0]?.url;
-  // A second photo, when present, is revealed on hover.
-  const hover  = photos[1]?.url;
+  const cover = coverOf(product);
+  // The photo the admin picked for hover (or the second photo) fades in on hover.
+  const hover = hoverOf(product);
   return (
     <div className="card" onClick={() => onClick(product)}>
       <div className="card-img">

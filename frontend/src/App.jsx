@@ -41,6 +41,10 @@ export default function App() {
           {/* Public */}
           <Route path="/"            element={<HomePage />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/men"         element={<CategoryPage gender="men" />} />
+          <Route path="/men/:slug"   element={<CategoryPage gender="men" />} />
+          <Route path="/women"       element={<CategoryPage gender="women" />} />
+          <Route path="/women/:slug" element={<CategoryPage gender="women" />} />
           <Route path="/branches"    element={<BranchesPage />} />
           <Route path="/stores"      element={<Navigate to="/branches" replace />} />
           <Route path="/our-story"   element={<OurStoryPage />} />

@@ -61,7 +61,10 @@ export default function ProductModal({ product, onClose }) {
       <div className="detail">
         <div className="detail-img">
           {activeImg
-            ? <img src={assetUrl(activeImg.url)} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <>
+                <img className="detail-photo-bg" src={assetUrl(activeImg.url)} alt="" aria-hidden="true" />
+                <img className="detail-photo" src={assetUrl(activeImg.url)} alt={product.name} />
+              </>
             : <div className="glyph">{product.glyph}</div>
           }
           {n > 1 && (

@@ -6,9 +6,15 @@ import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import { api, assetUrl } from '../services/api';
 import { coverOf } from '../utils/productPhotos';
+import { fitsGender, genderName, isGenderCategory } from '../utils/gender';
 
-export default function CategoryPage() {
+// /category/:slug lists one category. /men and /women (optionally with a
+// category, e.g. /men/coin-purse) list that gender's products, unisex included.
+export default function CategoryPage({ gender = null }) {
   const { slug } = useParams();
+  const gName    = genderName(gender);
+  // Where a category link goes: kept inside the gender menu when there is one.
+  const catPath  = (c) => gender ? `/${gender}/${c.slug}` : `/category/${c.slug}`;
   const [categories, setCategories] = useState(null);
   const [products,   setProducts]   = useState(null);
   const [selected,   setSelected]   = useState(null);
@@ -21,14 +27,20 @@ export default function CategoryPage() {
   useEffect(() => { window.scrollTo(0, 0); }, [slug]);
 
   const loading  = !categories || !products;
-  const category = categories?.find(c => c.slug === slug);
+  const category = slug ? categories?.find(c => c.slug === slug) : null;
   const parent   = category && categories.find(c => c.id === category.parent_id);
-  const children = category ? categories.filter(c => c.parent_id === category.id) : [];
+  const children = category
+    ? categories.filter(c => c.parent_id === category.id && (!gender || !c.genders || c.genders.includes(gender)))
+    : [];
+  // A bare /men or /women page has no category; it lists all of that gender.
+  const found    = category || (gender && !slug);
+  const title    = category ? (gName ? `${gName}'s ${category.name}` : category.name) : (gName || 'Category');
 
   // The category's own slug plus every descendant's, so a parent (e.g. Men)
   // also lists products filed under its children (e.g. Wallet).
   const shown = (() => {
-    if (!category || !products) return []; // products may still be loading
+    if (!found || !products) return []; // products may still be loading
+    if (!category) return products.filter(p => fitsGender(p, gender));
     const slugs = new Set([category.slug]);
     for (let grew = true; grew;) {
       grew = false;
@@ -37,7 +49,7 @@ export default function CategoryPage() {
         if (p && slugs.has(p.slug) && !slugs.has(c.slug)) { slugs.add(c.slug); grew = true; }
       }
     }
-    return products.filter(p => slugs.has(p.category?.slug));
+    return products.filter(p => slugs.has(p.category?.slug) && fitsGender(p, gender));
   })();
 
   // Banner photo: the category's own image, else its parent's, else the
@@ -55,11 +67,14 @@ export default function CategoryPage() {
         <div className="lhero-inner story-hero">
           <nav className="crumbs" aria-label="Breadcrumb">
             <Link to="/">Home</Link>
-            {parent && <><span>/</span><Link to={`/category/${parent.slug}`}>{parent.name}</Link></>}
+            {gName && (category
+              ? <><span>/</span><Link to={`/${gender}`}>{gName}</Link></>
+              : <><span>/</span><span aria-current="page">{gName}</span></>)}
+            {parent && !(gender && isGenderCategory(parent)) && <><span>/</span><Link to={catPath(parent)}>{parent.name}</Link></>}
             {category && <><span>/</span><span aria-current="page">{category.name}</span></>}
           </nav>
-          <h1>{category ? category.name : 'Category'}</h1>
-          {!loading && category && (
+          <h1>{title}</h1>
+          {!loading && found && (
             <p>{shown.length} product{shown.length === 1 ? '' : 's'}</p>
           )}
         </div>
@@ -68,21 +83,21 @@ export default function CategoryPage() {
       <section className="section wrap">
         {children.length > 0 && (
           <div className="filters cat-sub">
-            <Link className="chip active" to={`/category/${category.slug}`}>All {category.name}</Link>
+            <Link className="chip active" to={catPath(category)}>All {category.name}</Link>
             {children.map(c => (
-              <Link key={c.slug} className="chip" to={`/category/${c.slug}`}>{c.name}</Link>
+              <Link key={c.slug} className="chip" to={catPath(c)}>{c.name}</Link>
             ))}
           </div>
         )}
 
         {loading ? (
           <div className="loading">Loading products…</div>
-        ) : !category ? (
+        ) : !found ? (
           <div className="empty">
             Category not found. <Link to="/#shop" style={{ textDecoration: 'underline' }}>Browse all products</Link>
           </div>
         ) : shown.length === 0 ? (
-          <div className="empty">No products in this category yet.</div>
+          <div className="empty">No products {category ? 'in this category' : `for ${gName}`} yet.</div>
         ) : (
           <div className="grid">
             {shown.map(p => <ProductCard key={p.id} product={p} onClick={setSelected} />)}

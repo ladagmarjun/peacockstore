@@ -38,17 +38,31 @@ async function fetchCatalog(path) {
 const CATALOG_TTL = 5 * 60 * 1000;
 const catalogCache = new Map();
 
-function catalogRequest(path) {
+function catalogRequest(path, load = fetchCatalog) {
   const hit = catalogCache.get(path);
   if (hit && Date.now() - hit.time < CATALOG_TTL) return hit.promise;
 
-  const promise = fetchCatalog(path);
+  const promise = load(path);
   const entry = { promise, time: Date.now() };
   catalogCache.set(path, entry);
   promise.catch(() => {
     if (catalogCache.get(path) === entry) catalogCache.delete(path);
   });
   return promise;
+}
+
+// The products endpoint is paginated (at most 60 per page), so the shop asks
+// for every page and joins them; it filters by category and gender itself.
+async function fetchAllProducts() {
+  const products = [];
+  for (let page = 1, last = 1; page <= last; page++) {
+    const res = await fetch(`${BASE}/products?per_page=60&page=${page}`, { headers: { Accept: 'application/json' } });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
+    products.push(...data.data);
+    last = data.meta?.last_page ?? 1;
+  }
+  return products;
 }
 
 export function clearCatalogCache() {
@@ -75,7 +89,7 @@ export const api = {
   getBrands:     ()       => catalogRequest('/brands'),
   getStores:     ()       => catalogRequest('/stores'),
   getBanners:    (placement) => catalogRequest('/banners' + (placement ? `?placement=${placement}` : '')),
-  getProducts:   (cat)    => catalogRequest('/products' + (cat && cat !== 'all' ? `?cat=${cat}` : '')),
+  getProducts:   ()       => catalogRequest('/products?all', fetchAllProducts),
   getProduct:    (slug)   => catalogRequest(`/products/${slug}`),
   getProductById:(id)     => catalogRequest(`/products/id/${id}`),
 

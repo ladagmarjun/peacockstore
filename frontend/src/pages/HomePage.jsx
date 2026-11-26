@@ -111,10 +111,36 @@ export default function HomePage() {
   }, [categories]);
 
   const activeSlugs = activeCat === 'all' ? null : slugsUnder(activeCat);
-  const shown = products.filter(p =>
-    (!activeSlugs || activeSlugs.has(p.category?.slug)) &&
-    (!activeBrand || (p.brand || '') === activeBrand)
+  const brandProducts = useMemo(
+    () => products.filter(p => !activeBrand || (p.brand || '') === activeBrand),
+    [products, activeBrand]
   );
+  const shown = brandProducts.filter(p => !activeSlugs || activeSlugs.has(p.category?.slug));
+
+  // Two-level filter menu: top-level groups (Men, Women…), then the
+  // subcategories of whichever group is active. Empty categories are hidden.
+  const countOf = useCallback((slug) => {
+    const slugs = slugsUnder(slug);
+    return brandProducts.filter(p => slugs.has(p.category?.slug)).length;
+  }, [brandProducts, slugsUnder]);
+
+  const activeObj = categories.find(c => c.slug === activeCat);
+  let activeTop = activeObj;
+  while (activeTop?.parent_id != null) {
+    const parent = categories.find(c => c.id === activeTop.parent_id);
+    if (!parent) break;
+    activeTop = parent;
+  }
+  const topCats = categories
+    .filter(c => c.parent_id == null)
+    .map(c => ({ ...c, count: countOf(c.slug) }))
+    .filter(c => c.count > 0 || c.slug === activeTop?.slug);
+  const subCats = activeTop
+    ? categories
+        .filter(c => c.parent_id === activeTop.id)
+        .map(c => ({ ...c, count: countOf(c.slug) }))
+        .filter(c => c.count > 0 || c.slug === activeCat)
+    : [];
 
   // "New" tagged pieces first; otherwise the latest few products.
   const newArrivals = useMemo(() => {
@@ -215,21 +241,41 @@ export default function HomePage() {
       <section className="section wrap" id="shop" ref={shopRef}>
         <SectionHead title="Shop All" sub={`${shown.length} product${shown.length === 1 ? '' : 's'}`} />
 
-        <div className="filters" role="tablist" aria-label="Filter by category">
-          {[{ slug: 'all', name: 'All' }, ...categories].map(c => (
-            <button
-              key={c.slug}
-              role="tab"
-              aria-selected={activeCat === c.slug}
-              className={`chip${activeCat === c.slug ? ' active' : ''}`}
-              onClick={(e) => {
-                setCategory(c.slug);
-                e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-              }}
-            >
-              {c.name}
-            </button>
-          ))}
+        <div className="cat-menu">
+          <div className="filters cat-top" role="tablist" aria-label="Filter by category">
+            {[{ slug: 'all', name: 'All', count: brandProducts.length }, ...topCats].map(c => {
+              const on = c.slug === 'all' ? activeCat === 'all' : activeTop?.slug === c.slug;
+              return (
+                <button
+                  key={c.slug} type="button" role="tab" aria-selected={on}
+                  className={`chip${on ? ' active' : ''}`}
+                  onClick={(e) => {
+                    setCategory(c.slug);
+                    e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                  }}
+                >
+                  {c.name}<span className="chip-count">{c.count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {subCats.length > 0 && (
+            <div className="filters cat-sub" role="tablist" aria-label={`${activeTop.name} categories`}>
+              {[{ slug: activeTop.slug, name: `All ${activeTop.name}` }, ...subCats].map(c => (
+                <button
+                  key={c.slug} type="button" role="tab" aria-selected={activeCat === c.slug}
+                  className={`sub-chip${activeCat === c.slug ? ' active' : ''}`}
+                  onClick={(e) => {
+                    setCategory(c.slug);
+                    e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                  }}
+                >
+                  {c.name}{c.count != null && <span className="chip-count">{c.count}</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {activeBrand && (

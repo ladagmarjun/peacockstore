@@ -2,6 +2,7 @@ import { Fragment, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { GENDER_MENUS, hasGenderMenus, categoriesFor } from '../utils/gender';
 
 const ANNOUNCEMENTS = [
   'Genuine leather goods, handcrafted to last',
@@ -83,6 +84,19 @@ export default function Navbar() {
   const childrenOf = (p) => categories.filter(c => c.parent_id === p.id);
   const catHref    = (c) => `/category/${c.slug}`;
 
+  // With gender menus, Men and Women each list the product-type categories
+  // they have products for, led by an "All Men" / "All Women" link.
+  const genderMenus = hasGenderMenus(categories)
+    ? GENDER_MENUS.map(g => ({
+        ...g,
+        items: [
+          { slug: '', name: `All ${g.name}` },
+          ...categoriesFor(categories, g.key).map(c => ({ slug: c.slug, name: c.name })),
+        ],
+      }))
+    : null;
+  const genderHref = (g) => (it) => `/${g.key}${it.slug ? `/${it.slug}` : ''}`;
+
   const dropdown = (key, label, items, empty, toHref, keyOf, nameOf) => (
     <div
       className={`menu-item has-dropdown${openDrop === key ? ' open' : ''}`}
@@ -136,13 +150,17 @@ export default function Navbar() {
 
           <nav className="menu" ref={menuRef}>
             <a href="/#shop" onClick={goToShop}>Shop All</a>
-            {parents.map(p => {
-              const kids = childrenOf(p);
-              return kids.length === 0
-                ? <Link key={p.slug} to={catHref(p)}>{p.name}</Link>
-                : <Fragment key={p.slug}>{dropdown(`cat-${p.slug}`, p.name, [{ ...p, name: `All ${p.name}` }, ...kids],
-                    '', catHref, c => c.slug, c => c.name)}</Fragment>;
-            })}
+            {genderMenus
+              ? genderMenus.map(g => (
+                  <Fragment key={g.key}>{dropdown(`gender-${g.key}`, g.name, g.items, '', genderHref(g), it => it.slug || 'all', it => it.name)}</Fragment>
+                ))
+              : parents.map(p => {
+                  const kids = childrenOf(p);
+                  return kids.length === 0
+                    ? <Link key={p.slug} to={catHref(p)}>{p.name}</Link>
+                    : <Fragment key={p.slug}>{dropdown(`cat-${p.slug}`, p.name, [{ ...p, name: `All ${p.name}` }, ...kids],
+                        '', catHref, c => c.slug, c => c.name)}</Fragment>;
+                })}
             {dropdown('brand', 'Brands', brands, 'No brands yet',
               b => `/?brand=${encodeURIComponent(b.name)}`, b => b.id, b => b.name)}
             <Link to="/our-story">Our Story</Link>
@@ -160,7 +178,16 @@ export default function Navbar() {
           <div className="mobile-menu">
             <a href="/#shop" onClick={(e) => { goToShop(e); closeMenu(); }}>Shop All</a>
 
-            {parents.map(p => {
+            {genderMenus && genderMenus.map(g => (
+              <div key={g.key} className="mobile-group">
+                <span className="mobile-group-title">{g.name}</span>
+                {g.items.map(it => (
+                  <Link key={it.slug || 'all'} to={genderHref(g)(it)} onClick={closeMenu}>{it.name}</Link>
+                ))}
+              </div>
+            ))}
+
+            {!genderMenus && parents.map(p => {
               const kids = childrenOf(p);
               return kids.length === 0
                 ? <Link key={p.slug} to={catHref(p)} onClick={closeMenu}>{p.name}</Link>

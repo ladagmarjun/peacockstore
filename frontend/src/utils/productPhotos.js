@@ -9,3 +9,12 @@ export function productPhotos(p) {
 export function coverOf(p) {
   return productPhotos(p)[0]?.url;
 }
+
+// Photo revealed when hovering a product card: the admin's "Hover image"
+// (`hover_image_url`), otherwise the second photo. Never the cover itself.
+export function hoverOf(p) {
+  const photos = productPhotos(p);
+  const cover  = photos[0]?.url;
+  if (p.hover_image_url && p.hover_image_url !== cover) return p.hover_image_url;
+  return photos[1]?.url;
+}

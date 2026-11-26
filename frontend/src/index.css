@@ -257,6 +257,30 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .chip:hover { color: var(--ink); border-color: var(--ink); }
 .chip.active { color: #fff; background: var(--ink); border-color: var(--ink); }
 
+/* Home "Shop All" two-level category menu */
+.cat-menu { margin-bottom: 28px; }
+.cat-menu .filters { margin-bottom: 0; }
+.cat-menu .chip { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.chip-count {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px;
+  border-radius: 999px; background: var(--soft); color: var(--muted);
+  font-size: 11px; letter-spacing: 0; font-weight: 600;
+}
+.chip.active .chip-count { background: rgba(255,255,255,.18); color: #fff; }
+.cat-menu .cat-sub {
+  gap: 4px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+}
+.sub-chip {
+  flex: none; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 0; border-radius: 6px; padding: 7px 12px;
+  font: inherit; font-size: 14px; color: var(--muted); transition: color .15s, background .15s;
+}
+.sub-chip:hover { color: var(--ink); background: var(--soft); }
+.sub-chip.active { color: var(--ink); background: var(--soft); font-weight: 600; }
+.sub-chip .chip-count { display: inline; background: transparent; min-width: 0; padding: 0; height: auto; font-weight: 500; }
+.sub-chip .chip-count::before { content: "("; }
+.sub-chip .chip-count::after { content: ")"; }
+
 .brand-filter {
   display: inline-flex; align-items: center; gap: 10px; margin-bottom: 24px;
   border: 1px solid var(--line); padding: 6px 6px 6px 14px; font-size: 13px;
@@ -428,7 +452,17 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   animation: slideUp .25s ease;
 }
 @keyframes slideUp { from { transform: translateY(16px); } to { transform: translateY(0); } }
-.detail-img { position: relative; background: var(--soft); display: flex; align-items: center; justify-content: center; min-height: 420px; }
+/* Fixed-size modal: the photo is pinned inside its frame so switching between
+   tall and wide photos never resizes the dialog. */
+.detail { height: min(680px, 90vh); grid-template-rows: minmax(0, 1fr); }
+.detail-img { position: relative; background: #fff; display: flex; align-items: center; justify-content: center; min-height: 420px; overflow: hidden; }
+/* Whole photo always visible (contain); a blurred copy fills any leftover space. */
+.detail-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1; }
+.detail-photo-bg {
+  position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px);
+  object-fit: cover; filter: blur(28px) saturate(.9); opacity: .55; transform: scale(1.1);
+}
+.detail-info { overflow-y: auto; }
 .detail-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
   width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer;
@@ -598,8 +632,9 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .logo-text { position: absolute; left: 50%; transform: translateX(-50%); }
   .logo-img { height: 44px; }
   .grid { grid-template-columns: repeat(3, 1fr); }
-  .detail { grid-template-columns: 1fr; }
-  .detail-img { min-height: 320px; }
+  .detail { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
+  .detail-img { min-height: 0; aspect-ratio: 1; }
+  .detail-info { overflow: visible; }
   .foot-grid { grid-template-columns: 1fr 1fr; }
   .stat-grid { grid-template-columns: repeat(2,1fr); }
   .admin-sidebar { width: 180px; }
