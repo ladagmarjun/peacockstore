@@ -17,6 +17,14 @@ export default function ProductModal({ product, onClose }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [product, onClose]);
 
+  // Freeze the page behind the modal so swipes don't scroll the product grid.
+  useEffect(() => {
+    if (!product) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [product]);
+
   if (!product) return null;
 
   const colors = Array.isArray(product.colors)

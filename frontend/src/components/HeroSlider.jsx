@@ -22,6 +22,8 @@ export default function HeroSlider({ banners }) {
           return (
             <div className="hero-slide" key={b.id}>
               <img src={assetUrl(b.image_url)} alt={headline || label || 'Peacock Leather'} />
+              {/* Phones only: the title sits in the blue middle third of the image */}
+              {(headline || label) && <div className="hero-center" aria-hidden="true">{headline || label}</div>}
               {(label || headline || b.subtext || b.link_url) && (
                 <div className={`hero-overlay align-${b.align || 'center'}`}>
                   {label && <span className="hero-eyebrow">{label}</span>}
