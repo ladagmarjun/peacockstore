@@ -99,7 +99,7 @@ export default function CategoryPage({ gender = null }) {
         ) : shown.length === 0 ? (
           <div className="empty">No products {category ? 'in this category' : `for ${gName}`} yet.</div>
         ) : (
-          <div className="grid">
+          <div className="product-grid">
             {shown.map(p => <ProductCard key={p.id} product={p} onClick={setSelected} />)}
           </div>
         )}

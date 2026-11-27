@@ -195,7 +195,7 @@ export default function HomePage() {
             title="New Arrivals"
             sub="The latest genuine leather pieces — designed to elevate your everyday."
           />
-          <div className="grid">
+          <div className="product-grid">
             {newArrivals.map(p => <ProductCard key={p.id} product={p} onClick={setSelected} />)}
           </div>
           <div className="section-cta">
@@ -290,7 +290,7 @@ export default function HomePage() {
         ) : shown.length === 0 ? (
           <div className="empty">No products found.</div>
         ) : (
-          <div className="grid">
+          <div className="product-grid">
             {shown.map(p => <ProductCard key={p.id} product={p} onClick={setSelected} />)}
           </div>
         )}

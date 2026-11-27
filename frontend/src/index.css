@@ -1,3 +1,24 @@
+/* Tailwind utilities only: no Preflight reset, so existing pages keep their look.
+   The site's own reset lives in the `base` layer below so Tailwind classes such
+   as p-4 / m-2 can override it. Unlayered rules in this file still beat Tailwind,
+   so style a given element with one or the other. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Brand colors as Tailwind classes: bg-navy, text-ink, border-line, … */
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-brand-red: var(--brand-red);
+  --color-ink: var(--ink);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-soft: var(--soft);
+  --font-sans: 'Assistant', sans-serif;
+}
+
 :root {
   /* Brand palette, taken from the Peacock logo: navy wordmark + red fan. */
   --navy: #0f3b58;
@@ -23,22 +44,24 @@
   --red: var(--brand-red);
   --red-deep: var(--brand-red-deep);
 }
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Assistant', sans-serif;
-  font-size: 16px;
-  color: var(--text);
-  background: var(--paper);
-  line-height: 1.6;
-  letter-spacing: .04em;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Assistant', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    background: var(--paper);
+    line-height: 1.6;
+    letter-spacing: .04em;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { color: var(--ink); font-weight: 400; letter-spacing: .04em; line-height: 1.25; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 }
-h1, h2, h3, h4 { color: var(--ink); font-weight: 400; letter-spacing: .04em; line-height: 1.25; }
 .wrap { max-width: 1300px; margin: 0 auto; padding: 0 32px; }
-a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; }
-button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 
 /* ── Buttons (square, Dawn-style) ─────────────────────── */
 .btn, .btn-sm, .btn-line, .btn-outline, .btn-ghost-sm, .btn-outline-light, .btn-ghost {
@@ -291,7 +314,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .brand-filter button:hover { background: var(--ink); color: #fff; }
 
 /* ── Product grid / cards ─────────────────────────────── */
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 6px; }
+.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 6px; }
 .card { cursor: pointer; display: flex; flex-direction: column; }
 .card-img {
   aspect-ratio: 7 / 10; position: relative; overflow: hidden;
@@ -320,8 +343,9 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 /* ── Category tiles ───────────────────────────────────── */
 .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 180px)); gap: 12px; }
 .tile { display: block; background: none; border: none; text-align: left; color: var(--ink); padding: 0; }
-.tile-img { aspect-ratio: 1; overflow: hidden; background: var(--soft); display: grid; place-items: center; }
-.tile-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.tile-img { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--soft); display: grid; place-items: center; }
+/* Pinned to the square so tall photos are cropped around the centre, not cut off at the bottom. */
+.tile-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
 .tile-img .glyph { font-size: 44px; }
 .tile:hover .tile-img img { transform: scale(1.04); }
 .tile-name { display: block; padding: 10px 4px 0; font-size: 15px; }
@@ -441,67 +465,9 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
 .mk-meta span { font-size: 15px; color: var(--ink); }
 
 /* ── Product modal ────────────────────────────────────── */
-.overlay {
-  position: fixed; inset: 0; background: rgba(10,42,64,.55); z-index: 100;
-  display: flex; align-items: center; justify-content: center; padding: 24px;
-  animation: fadeIn .2s ease;
-}
+/* Styled with Tailwind classes in ProductModal.jsx; only the animations live here. */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.detail {
-  background: #fff; width: 100%; max-width: 1020px; max-height: 90vh;
-  overflow: auto; display: grid; grid-template-columns: 1.1fr 1fr;
-  animation: slideUp .25s ease;
-}
 @keyframes slideUp { from { transform: translateY(16px); } to { transform: translateY(0); } }
-/* Fixed-size modal: the photo is pinned inside its frame so switching between
-   tall and wide photos never resizes the dialog. */
-.detail { height: min(680px, 90vh); grid-template-rows: minmax(0, 1fr); }
-.detail-img { position: relative; background: #fff; display: flex; align-items: center; justify-content: center; min-height: 420px; overflow: hidden; }
-/* Whole photo always visible (contain); a blurred copy fills any leftover space. */
-.detail-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1; }
-.detail-photo-bg {
-  position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px);
-  object-fit: cover; filter: blur(28px) saturate(.9); opacity: .55; transform: scale(1.1);
-}
-.detail-info { overflow-y: auto; }
-.detail-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
-  width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer;
-  background: rgba(255,255,255,.85); color: var(--ink); font-size: 24px; line-height: 1;
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
-}
-.detail-arrow:hover { background: #fff; }
-.detail-arrow.prev { left: 12px; }
-.detail-arrow.next { right: 12px; }
-.detail-dots { position: absolute; bottom: 14px; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; justify-content: center; }
-.detail-dots button { width: 8px; height: 8px; padding: 0; border: 1px solid var(--ink); border-radius: 50%; background: rgba(255,255,255,.7); cursor: pointer; }
-.detail-dots button.active { background: var(--ink); }
-.detail-img .glyph { font-size: 150px; }
-.detail-info { padding: 44px 40px; position: relative; }
-.close-btn {
-  position: absolute; top: 14px; right: 14px; width: 40px; height: 40px;
-  border: none; background: none; font-size: 18px; color: var(--ink);
-}
-.detail-info h3 { font-size: 32px; margin-top: 6px; }
-.rate { display: flex; align-items: center; gap: 8px; margin: 10px 0 14px; font-size: 13px; color: var(--muted); }
-.detail-price { font-size: 20px; color: var(--ink); margin-bottom: 18px; letter-spacing: .06em; }
-.detail-price s { font-size: 16px; color: var(--muted); margin-right: 10px; }
-.detail-desc { font-size: 15px; margin-bottom: 20px; }
-.spec { border-top: 1px solid var(--line); padding: 12px 0; display: flex; justify-content: space-between; font-size: 14px; }
-.spec span:first-child { color: var(--muted); }
-.spec span:last-child { color: var(--ink); }
-.swatches { display: flex; gap: 10px; margin: 16px 0 24px; }
-.sw { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
-.sw.active { box-shadow: 0 0 0 1px var(--ink); }
-.buy-label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-.buy-links { display: flex; flex-direction: column; gap: 8px; }
-.buy {
-  display: flex; align-items: center; justify-content: space-between;
-  min-height: 48px; padding: 0 18px; color: #fff; font-size: 15px; letter-spacing: .06em;
-  transition: filter .15s;
-}
-.buy:hover { filter: brightness(1.1); }
-.buy-store { background: var(--navy); }
 
 /* ── Footer ───────────────────────────────────────────── */
 .site-footer { border-top: 1px solid var(--line); padding: 56px 0 24px; }
@@ -632,10 +598,7 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .nav { gap: 8px; height: 68px; }
   .logo-text { position: absolute; left: 50%; transform: translateX(-50%); }
   .logo-img { height: 44px; }
-  .grid { grid-template-columns: repeat(3, 1fr); }
-  .detail { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
-  .detail-img { min-height: 0; aspect-ratio: 1; }
-  .detail-info { overflow: visible; }
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
   .foot-grid { grid-template-columns: 1fr 1fr; }
   .stat-grid { grid-template-columns: repeat(2,1fr); }
   .admin-sidebar { width: 180px; }
@@ -682,10 +645,11 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .announce { font-size: 12px; padding: 0 4px; }
   .section { padding-top: 44px; }
   .section-head { margin-bottom: 20px; }
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 24px 8px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 8px; }
   .card-name { font-size: 14px; }
   .price { font-size: 14px; }
-  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 150px)); gap: 10px; }
+  /* Two equal columns that fill the width, lined up with the product grid. */
+  .tile-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 8px; }
   .tile-name { font-size: 14px; }
   .why { margin-top: 44px; padding: 44px 0; }
   .why-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -693,16 +657,6 @@ button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
   .hero-arrow { display: none; }
   .mid-banner { margin-top: 44px; }
   .mid-banner-inner { padding: 44px 16px; }
-  .detail-info { padding: 32px 20px; }
-  /* Phones: the modal fills the screen and scrolls as one page. */
-  .overlay { padding: 0; }
-  .detail { max-width: none; height: 100dvh; max-height: none; overscroll-behavior: contain; grid-auto-rows: max-content; align-content: start; }
-  .detail-info h3 { font-size: 24px; }
-  /* Close stays in the top corner while the details scroll under it. */
-  .close-btn {
-    position: fixed; top: 12px; right: 12px; z-index: 3; border-radius: 50%;
-    background: rgba(255,255,255,.9); box-shadow: 0 1px 4px rgba(0,0,0,.15);
-  }
   .foot-grid { grid-template-columns: 1fr; gap: 28px; }
   .copyright { flex-direction: column-reverse; align-items: flex-start; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
